@@ -1,4 +1,4 @@
-package ru.hse.lorddux;
+package ru.hse.lorddux.utils;
 
 import java.io.File;
 

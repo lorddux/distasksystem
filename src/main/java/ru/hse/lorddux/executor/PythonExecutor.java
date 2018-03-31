@@ -3,19 +3,16 @@ package ru.hse.lorddux.executor;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.hse.lorddux.PathManager;
+import ru.hse.lorddux.utils.PathManager;
 import ru.hse.lorddux.config.Configuration;
 import ru.hse.lorddux.exception.ExecutorException;
 
-import javax.json.Json;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 
 @AllArgsConstructor
