@@ -7,8 +7,9 @@
 *.jar
 *.war
 *.ear
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+var/
+log/
+# virtual machine crash logs, see ru.hse.lorddux.http://www.java.com/en/ru.hse.lorddux.download/help/error_hotspot.xml
 hs_err_pid*
 
 target/
