@@ -16,6 +16,10 @@ public class PathManager {
     public static String getDefaultClassPath(Class clazz) {
         StringBuilder path = new StringBuilder(subfolder);
         appendDir(path, clazz.getCanonicalName());
+        File checkDir = new File(path.toString());
+        if (! checkDir.exists()) {
+            checkDir.mkdirs();
+        }
         return path.toString();
     }
 

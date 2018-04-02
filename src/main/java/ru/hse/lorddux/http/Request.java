@@ -16,14 +16,13 @@ abstract class Request<Result, RequestResponseData extends ResponseData<Result>>
 {
     private final URIBuilder uriBuilder;
     private final Class<RequestResponseData> responseDataClass;
-    private static final String DEFAULT_PATH = "";
-    private static final String DEFAUUT_HOST = "";
+    private static final String DEFAULT_HOST = "";
 
     protected Request(String host, String path, Class<RequestResponseData> responseDataClass) {
         if (host == null) {
-            host = DEFAUUT_HOST;
+            host = DEFAULT_HOST;
         }
-        uriBuilder = new URIBuilder().setScheme("http").setHost(host).setPath(DEFAULT_PATH + path);
+        uriBuilder = new URIBuilder().setScheme("http").setHost(host).setPath(path);
         this.responseDataClass = responseDataClass;
     }
 
@@ -39,4 +38,5 @@ abstract class Request<Result, RequestResponseData extends ResponseData<Result>>
             return responseData.getResult();
         }
     }
+
 }

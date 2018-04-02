@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class InitRequestData implements RequestData {
-    private Integer cpu;
-    private Integer ram;
-    private Integer hdd;
-    private Integer ssd;
+public class DeleteMessageQueueRequestData implements RequestData {
+    private String popReceipt;
 }

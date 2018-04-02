@@ -11,8 +11,8 @@ import java.net.URISyntaxException;
 public class ConfigurationRequest extends Request<Configuration, ConfigurationResponseData>{
     InitRequestData requestData;
 
-    public ConfigurationRequest(InitRequestData requestData) {
-        super(null, "/config", ConfigurationResponseData.class);
+    public ConfigurationRequest(InitRequestData requestData, String host, String path) {
+        super(host, path, ConfigurationResponseData.class);
         this.requestData = requestData;
     }
 

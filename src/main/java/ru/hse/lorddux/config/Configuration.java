@@ -11,6 +11,10 @@ public class Configuration {
     private WorkerType type;
     private List<String> JVMParameters;
     private String queueAddress;
+    private String queueAuthorization;
+    private String queueAccount;
+    private String queueName;
+    private Integer queueTaskVisibilityTimeout;
     private String storageAddress;
     private String codeAddress;
 
