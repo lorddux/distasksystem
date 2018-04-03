@@ -2,12 +2,8 @@ package ru.hse.lorddux.http;
 
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
-import ru.hse.lorddux.structures.request.GetMessageQueueRequestData;
-import ru.hse.lorddux.structures.request.RequestData;
 import ru.hse.lorddux.structures.response.ResponseData;
-import ru.hse.lorddux.structures.response.TaskResponseData;
 
-import javax.xml.transform.Result;
 import java.net.URISyntaxException;
 
 public abstract class QueueRequest<Result, RequestResponseData extends ResponseData<Result>> extends Request<Result, RequestResponseData> {

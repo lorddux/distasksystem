@@ -1,99 +1,47 @@
 package ru.hse.lorddux.queue;
 
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import ru.hse.lorddux.http.DeleteMessageQueueRequest;
-import ru.hse.lorddux.http.GetMessageQueueRequest;
-import ru.hse.lorddux.structures.TaskItem;
-import ru.hse.lorddux.structures.request.DeleteMessageQueueRequestData;
-import ru.hse.lorddux.structures.request.GetMessageQueueRequestData;
-import ru.hse.lorddux.utils.XMLTaskParser;
+import com.microsoft.azure.storage.*;
+import com.microsoft.azure.storage.queue.*;
 
-import java.beans.XMLDecoder;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
 
-public class QueueProcessorImpl implements QueueProcessor {
-    private static final Logger log_ = LogManager.getLogger(QueueProcessor.class);
-    private static String GET_MESSAGE_PATH = "/messages";
-    private static String DELETE_MESSAGE_PATH = "/messages/messageid";
-    private static Integer DEFAULT_BATCH_SIZE = 50;
+public final class QueueProcessorImpl implements QueueProcessor {
+    private final CloudQueue queue;
 
-    private String queueAuthorization;
-    private String queueHost;
-    private String getMessagePath;
-    private String deleteMessagePath;
+    public QueueProcessorImpl(String storageConnectionString, String queueName)
+            throws URISyntaxException, InvalidKeyException, StorageException {
 
-
-    public QueueProcessorImpl(String queueAccount, String queueName, String queueAuthorization){
-        this.queueHost = buildQueueHost(queueAccount);
-        this.getMessagePath = buildQueuePath(queueName, GET_MESSAGE_PATH);
-        this.deleteMessagePath = buildQueuePath(queueName, DELETE_MESSAGE_PATH);
-        this.queueAuthorization = queueAuthorization;
+        CloudStorageAccount storageAccount = CloudStorageAccount.parse(storageConnectionString);
+        CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
+        queue = queueClient.getQueueReference(queueName);
     }
 
     @Override
-    public List<TaskItem> getNextBatch(int visibilityTimeout) {
-        return getNextBatch(DEFAULT_BATCH_SIZE, visibilityTimeout);
+    public CloudQueueMessage getNextTask() throws StorageException {
+        return queue.retrieveMessage();
     }
 
     @Override
-    public List<TaskItem> getNextBatch(int batchSize, int visibilityTimeout) {
-        GetMessageQueueRequestData requestData = new GetMessageQueueRequestData(batchSize, visibilityTimeout);
-        GetMessageQueueRequest request = new GetMessageQueueRequest(requestData, queueAuthorization, queueHost, getMessagePath);
-        try {
-            String xmlTasks = request.execute();
-            return XMLTaskParser.parse(xmlTasks);
-        } catch (Exception e) {
-            log_.warn("Can not get task", e);
-        }
-        return Collections.emptyList();
+    public Iterable<CloudQueueMessage> getNextBatch(int batchSize) throws StorageException {
+        batchSize = batchSize > 32 ? 32 : batchSize;
+        return queue.retrieveMessages(batchSize);
     }
 
     @Override
-    public TaskItem getNextTask(int visibilityTimeout) {
-        List<TaskItem> taskItems = getNextBatch(1, visibilityTimeout);
-        return taskItems.size() == 1 ? taskItems.get(0) : null;
+    public CloudQueueMessage getNextTask(int visibilityTimeout) throws StorageException {
+        return queue.retrieveMessage(visibilityTimeout, null, null);
     }
 
     @Override
-    public boolean deleteTask(String popReceipt) {
-        DeleteMessageQueueRequestData requestData = new DeleteMessageQueueRequestData(popReceipt);
-        DeleteMessageQueueRequest request = new DeleteMessageQueueRequest(requestData, queueAuthorization, queueHost, deleteMessagePath);
-        try {
-            request.execute();
-            return true;
-        } catch (Exception e) {
-            log_.warn("Can not delete task from queue", e);
-            return false;
-        }
+    public Iterable<CloudQueueMessage> getNextBatch(int batchSize, int visibilityTimeout) throws StorageException {
+        batchSize = batchSize > 32 ? 32 : batchSize;
+        return queue.retrieveMessages(batchSize, visibilityTimeout, null, null);
     }
 
-    /**
-     * Example:
-     * "https://myaccount.queue.core.windows.net"
-     * @return
-     */
-    private String buildQueueHost(String queueAccount) {
-        StringBuilder host = new StringBuilder();
-        host.append(queueAccount);
-        host.append(".queue.core.windows.net");
-        return host.toString();
+    @Override
+    public void deleteTask(CloudQueueMessage message) throws StorageException {
+        queue.deleteMessage(message);
     }
 
-    /**
-     * "/myqueue/messages"
-     * @param queueName
-     * @param methodPath
-     * @return
-     */
-    private String buildQueuePath(String queueName, String methodPath) {
-        StringBuilder pathBuilder = new StringBuilder("/");
-        pathBuilder.append(queueName);
-        pathBuilder.append(methodPath);
-        return pathBuilder.toString();
-    }
 }

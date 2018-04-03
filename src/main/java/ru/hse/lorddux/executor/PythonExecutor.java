@@ -1,10 +1,10 @@
 package ru.hse.lorddux.executor;
 
+import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.queue.CloudQueueMessage;
 import lombok.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.hse.lorddux.structures.TaskItem;
-import ru.hse.lorddux.utils.PathManager;
 import ru.hse.lorddux.exception.ExecutorException;
 
 import java.io.IOException;
@@ -21,10 +21,10 @@ public class PythonExecutor extends Thread {
     private static final int SLEEP_TIME = 1000;
 
     @NonNull
-    private BlockingQueue<TaskItem> tasksQueue;
+    private BlockingQueue<CloudQueueMessage> tasksQueue;
 
     @NonNull
-    private BlockingQueue<String> completedTaskIDQueue;
+    private BlockingQueue<CloudQueueMessage> completedTaskIDQueue;
 
     @NonNull
     private BlockingQueue<String> resultQueue;
@@ -61,11 +61,11 @@ public class PythonExecutor extends Thread {
         stopFlag = false;
     }
 
-    public boolean dispatch(TaskItem task) {
+    public boolean dispatch(CloudQueueMessage task) {
         return tasksQueue.offer(task);
     }
 
-    public int takeCompleteID(Collection<String> collection) {
+    public int takeCompleteID(Collection<CloudQueueMessage> collection) {
         return completedTaskIDQueue.drainTo(collection);
     }
 
@@ -76,7 +76,8 @@ public class PythonExecutor extends Thread {
     //TODO
     public void run() {
         String result;
-        TaskItem task = new TaskItem();
+        CloudQueueMessage task;
+        String taskId = "-1";
         try {
             while (!stopFlag) {
                 if (tasksQueue.isEmpty()) {
@@ -85,15 +86,18 @@ public class PythonExecutor extends Thread {
                 }
                 try {
                     task = tasksQueue.poll();
-                    result = processTask(task.getMessageText());
-                    completedTaskIDQueue.add(task.getMessageId());
+                    taskId = task.getMessageId();
+                    result = processTask(task.getMessageContentAsString());
                     resultQueue.add(result);
+                    completedTaskIDQueue.add(task);
                 } catch (ExecutorException e) {
-                    log_.error(String.format("Error while executing task %s", task.getMessageId()), e);
+                    log_.error(String.format("Error while executing task %s", taskId), e);
                 }
             }
         } catch (InterruptedException e) {
             log_.warn(String.format("Thread %s was interrupted!", Thread.currentThread().getName()));
+        } catch (StorageException e) {
+            log_.warn(String.format("Can not process task", Thread.currentThread().getName()), e);
         }
     }
 

@@ -1,33 +1,40 @@
 package ru.hse.lorddux.queue;
 
-import ru.hse.lorddux.structures.TaskItem;
-
-import java.util.List;
+import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.queue.CloudQueueMessage;
 
 public interface QueueProcessor {
     /**
      *
-     * @return task from queue as a string
+     * @return task from queue
      */
-    TaskItem getNextTask(int visibilityTimeout);
+    CloudQueueMessage getNextTask(int visibilityTimeout) throws StorageException;
 
     /**
      *
-     * @return batch of tasks from queue of some fixed size
+     * @return
      */
-    List<TaskItem> getNextBatch(int visibilityTimeout);
+    CloudQueueMessage getNextTask() throws StorageException;
 
     /**
      *
-     * @param batchSize
+     * @param batchSize size of the batch
+     * @param visibilityTimeout visibility timeout
+     * @return batch of tasks from queue of some custom size@return
+     */
+    Iterable<CloudQueueMessage> getNextBatch(int batchSize, int visibilityTimeout) throws StorageException;
+
+    /**
+     *
+     * @param batchSize size of the batch
      * @return batch of tasks from queue of some custom size
      */
-    List<TaskItem> getNextBatch(int batchSize, int visibilityTimeout);
+    Iterable<CloudQueueMessage> getNextBatch(int batchSize) throws StorageException;
 
     /**
      * Delete task from remote queue
-     * @param popReceipt
+     * @param message - message to delete from queue
      */
-    boolean deleteTask(String popReceipt);
+    void deleteTask(CloudQueueMessage message) throws StorageException;
 
 }

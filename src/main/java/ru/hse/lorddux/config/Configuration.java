@@ -9,14 +9,10 @@ public class Configuration {
     private static volatile Configuration instance;
 
     private WorkerType type;
-    private List<String> JVMParameters;
-    private String queueAddress;
-    private String queueAuthorization;
-    private String queueAccount;
-    private String queueName;
-    private Integer queueTaskVisibilityTimeout;
+    private List<String> jvmParameters;
     private String storageAddress;
-    private String codeAddress;
+    private CodeConfig codeConfig;
+    private QueueConfig queueConfig;
 
     public static Configuration getInstance() {
         Configuration localInstance = instance;
@@ -35,5 +31,17 @@ public class Configuration {
         synchronized (Configuration.class) {
             instance = newInstance;
         }
+    }
+
+    @Data
+    public static class CodeConfig {
+        private String address;
+        private String mainFile;
+    }
+
+    @Data
+    public static class QueueConfig {
+        private String storageConnectionString;
+        private String queueName;
     }
 }
