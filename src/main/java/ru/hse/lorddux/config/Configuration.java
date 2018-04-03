@@ -44,4 +44,9 @@ public class Configuration {
         private String storageConnectionString;
         private String queueName;
     }
+
+    public enum WorkerType {
+        EXECUTOR,
+        GENERATOR
+    }
 }

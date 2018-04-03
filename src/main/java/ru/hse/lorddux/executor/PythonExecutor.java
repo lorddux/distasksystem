@@ -15,7 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class PythonExecutor extends Thread {
+public class PythonExecutor implements Runnable {
     private static final Logger log_ = LogManager.getLogger(PythonExecutor.class);
     private static final String DEFAULT_PYTHON_COMMAND = "python";
     private static final int SLEEP_TIME = 1000;
@@ -57,7 +57,7 @@ public class PythonExecutor extends Thread {
         resultQueue = new LinkedBlockingQueue<>();
     }
 
-    public void stopThread() {
+    public void stop() {
         stopFlag = false;
     }
 

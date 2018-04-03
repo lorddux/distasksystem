@@ -2,21 +2,20 @@ package ru.hse.lorddux.http;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
-import ru.hse.lorddux.config.Configuration;
 import ru.hse.lorddux.structures.request.InitRequestData;
-import ru.hse.lorddux.structures.response.ConfigurationResponseData;
 
 import java.net.URISyntaxException;
 
-public class ConfigurationRequest extends Request<Configuration, ConfigurationResponseData>{
+public class ConfigurationRequestService implements RequestService<InitRequestData> {
     InitRequestData requestData;
+    URIBuilder uriBuilder;
 
-    public ConfigurationRequest(InitRequestData requestData, String host, String path) {
-        super(host, path, ConfigurationResponseData.class);
+    public ConfigurationRequestService(InitRequestData requestData, String host, String path) {
+        uriBuilder = new URIBuilder().setScheme("http").setHost(host).setPath(path);
         this.requestData = requestData;
     }
 
-    protected HttpGet createRequest(URIBuilder uriBuilder) throws URISyntaxException {
+    public HttpGet createRequest(InitRequestData requestData) throws URISyntaxException {
         uriBuilder.setParameter("cpu", this.requestData.getCpu().toString());
         uriBuilder.setParameter("ram", this.requestData.getRam().toString());
         uriBuilder.setParameter("hdd", this.requestData.getHdd().toString());
@@ -24,6 +23,4 @@ public class ConfigurationRequest extends Request<Configuration, ConfigurationRe
         HttpGet httpGet = new HttpGet(uriBuilder.build());
         return httpGet;
     }
-
-
 }
