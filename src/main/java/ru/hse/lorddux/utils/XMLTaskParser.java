@@ -10,6 +10,7 @@ import ru.hse.lorddux.structures.TaskItem;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.beans.XMLDecoder;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,12 +28,12 @@ public class XMLTaskParser {
         NodeList nodeList = document.getElementsByTagName("QueueMessage");
         List<TaskItem> resList = new ArrayList<>();
         for (int i = 0; i < nodeList.getLength(); i++) {
-            resList.add(getLanguage(nodeList.item(i)));
+            resList.add(getTaskItem(nodeList.item(i)));
         }
         return resList;
 
     }
-    private static TaskItem getLanguage(Node node) {
+    private static TaskItem getTaskItem(Node node) {
         TaskItem taskItem = new TaskItem();
         if (node.getNodeType() == Node.ELEMENT_NODE) {
             Element element = (Element) node;

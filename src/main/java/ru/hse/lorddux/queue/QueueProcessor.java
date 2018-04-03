@@ -28,6 +28,6 @@ public interface QueueProcessor {
      * Delete task from remote queue
      * @param popReceipt
      */
-    void deleteTask(String popReceipt);
+    boolean deleteTask(String popReceipt);
 
 }

@@ -1,5 +1,6 @@
 package ru.hse.lorddux.http;
 
+import org.apache.http.impl.client.HttpClients;
 import ru.hse.lorddux.exception.*;
 import java.io.IOException;
 import org.apache.http.client.utils.URIBuilder;
@@ -28,14 +29,16 @@ abstract class Request<Result, RequestResponseData extends ResponseData<Result>>
 
     protected abstract HttpUriRequest createRequest(URIBuilder uriBuilder) throws URISyntaxException;
 
-    public final Result execute(CloseableHttpClient httpclient) throws BaseException, IOException, URISyntaxException {
-        try (CloseableHttpResponse response = httpclient.execute(createRequest(this.uriBuilder))) {
-            String content = EntityUtils.toString(response.getEntity(), "UTF-8");
-            RequestResponseData responseData = new Gson().fromJson(content, this.responseDataClass);
-            if (!responseData.getSuccessFeature()) {
-                throw new BaseException(responseData.getErrorCode(), responseData.getDescription());
+    public final Result execute() throws BaseException, IOException, URISyntaxException {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            try (CloseableHttpResponse response = httpClient.execute(createRequest(this.uriBuilder))) {
+                String content = EntityUtils.toString(response.getEntity(), "UTF-8");
+                RequestResponseData responseData = new Gson().fromJson(content, this.responseDataClass);
+                if (!responseData.getSuccessFeature()) {
+                    throw new BaseException(responseData.getErrorCode(), responseData.getDescription());
+                }
+                return responseData.getResult();
             }
-            return responseData.getResult();
         }
     }
 
