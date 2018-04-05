@@ -20,12 +20,15 @@ public class PythonExecutor implements Runnable {
     private static final String DEFAULT_PYTHON_COMMAND = "python";
     private static final int SLEEP_TIME = 1000;
 
+    @Getter
     @NonNull
     private BlockingQueue<CloudQueueMessage> tasksQueue;
 
+    @Getter
     @NonNull
     private BlockingQueue<CloudQueueMessage> completedTaskIDQueue;
 
+    @Getter
     @NonNull
     private BlockingQueue<String> resultQueue;
 
@@ -42,7 +45,7 @@ public class PythonExecutor implements Runnable {
     @Getter
     private String pythonCommand = DEFAULT_PYTHON_COMMAND;
 
-    private static volatile boolean stopFlag = false;
+    private volatile boolean stopFlag = false;
 
     public PythonExecutor(String commandPath, String codePath, List<String> args, Integer queueSize) {
         this(commandPath, codePath, queueSize);
@@ -97,7 +100,7 @@ public class PythonExecutor implements Runnable {
         } catch (InterruptedException e) {
             log_.warn(String.format("Thread %s was interrupted!", Thread.currentThread().getName()));
         } catch (StorageException e) {
-            log_.warn(String.format("Can not process task", Thread.currentThread().getName()), e);
+            log_.warn("Can not process task", e);
         }
     }
 

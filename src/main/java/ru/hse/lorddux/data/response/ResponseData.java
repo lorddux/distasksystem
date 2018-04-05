@@ -1,4 +1,4 @@
-package ru.hse.lorddux.structures.response;
+package ru.hse.lorddux.data.response;
 
 import lombok.Data;
 

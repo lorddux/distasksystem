@@ -38,7 +38,7 @@ public class HttpHelperService {
                     return responseData;
                 }
             } catch (IOException ex) {
-                log_.warn("sending http request problem - " + request.getURI(), ex);
+                log_.debug("sending http request problem - " + request.getURI(), ex);
                 exception = ex;
             }
         }

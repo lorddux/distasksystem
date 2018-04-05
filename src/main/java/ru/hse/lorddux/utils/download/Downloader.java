@@ -1,4 +1,4 @@
-package ru.hse.lorddux.download;
+package ru.hse.lorddux.utils.download;
 
 import ru.hse.lorddux.exception.DownloadException;
 

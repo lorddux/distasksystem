@@ -1,6 +1,6 @@
 package ru.hse.lorddux.config;
 
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
@@ -8,20 +8,17 @@ import java.util.List;
 public class Configuration {
     private static volatile Configuration instance;
 
-    private WorkerType type;
-    private List<String> jvmParameters;
     private String storageAddress;
     private CodeConfig codeConfig;
     private QueueConfig queueConfig;
+    private List<String> jvmParameters;
+    private WorkerType type;
 
     public static Configuration getInstance() {
         Configuration localInstance = instance;
         if (localInstance == null) {
             synchronized (Configuration.class) {
                 localInstance = instance;
-                if (localInstance == null) {
-                    instance = localInstance = new Configuration();
-                }
             }
         }
         return localInstance;

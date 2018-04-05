@@ -1,4 +1,4 @@
-package ru.hse.lorddux.download;
+package ru.hse.lorddux.utils.download;
 
 import java.io.*;
 import java.net.HttpURLConnection;
