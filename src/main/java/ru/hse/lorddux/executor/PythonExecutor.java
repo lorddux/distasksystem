@@ -12,13 +12,16 @@ import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class PythonExecutor implements Runnable {
+public class PythonExecutor extends Thread {
     private static final Logger log_ = LogManager.getLogger(PythonExecutor.class);
     private static final String DEFAULT_PYTHON_COMMAND = "python";
     private static final int SLEEP_TIME = 1000;
+    public static int DEFAULT_QUEUE_SIZE = 100;
 
     @Getter
     @NonNull
@@ -55,25 +58,13 @@ public class PythonExecutor implements Runnable {
     public PythonExecutor(String commandPath, String codePath, Integer queueSize) {
         this.pythonCommand = commandPath;
         this.codePath = codePath;
-        tasksQueue = new ArrayBlockingQueue<>(queueSize);
-        completedTaskIDQueue = new LinkedBlockingQueue<>();
-        resultQueue = new LinkedBlockingQueue<>();
+        this.tasksQueue = new ArrayBlockingQueue<>(queueSize);
+        this.completedTaskIDQueue = new ArrayBlockingQueue<>(queueSize);
+        this.resultQueue = new ArrayBlockingQueue<>(queueSize);
     }
 
-    public void stop() {
+    public void stopThread() {
         stopFlag = false;
-    }
-
-    public boolean dispatch(CloudQueueMessage task) {
-        return tasksQueue.offer(task);
-    }
-
-    public int takeCompleteID(Collection<CloudQueueMessage> collection) {
-        return completedTaskIDQueue.drainTo(collection);
-    }
-
-    public int takeResults(Collection<String> collection) {
-        return resultQueue.drainTo(collection);
     }
 
     //TODO
@@ -91,9 +82,10 @@ public class PythonExecutor implements Runnable {
                     task = tasksQueue.poll();
                     taskId = task.getMessageId();
                     result = processTask(task.getMessageContentAsString());
-                    resultQueue.add(result);
-                    completedTaskIDQueue.add(task);
-                } catch (ExecutorException e) {
+                    log_.trace(String.format("Task %s executed. Result: %s", taskId, result));
+                    while ((! resultQueue.offer(result, 1, TimeUnit.SECONDS))           && (! stopFlag));
+                    while ((! completedTaskIDQueue.offer(task, 1, TimeUnit.SECONDS))    && (! stopFlag));
+                } catch (IOException e) {
                     log_.error(String.format("Error while executing task %s", taskId), e);
                 }
             }
@@ -104,14 +96,9 @@ public class PythonExecutor implements Runnable {
         }
     }
 
-    public String processTask(String taskMsg) throws ExecutorException {
-        try {
-            Process p = buildProcess(taskMsg);
-            return new String(p.getInputStream().readAllBytes());
-
-        } catch (IOException e) {
-            throw new ExecutorException(e);
-        }
+    public String processTask(String taskMsg) throws IOException {
+        Process p = buildProcess(taskMsg);
+        return new String(p.getInputStream().readAllBytes());
     }
 
     private Process buildProcess(String task) throws IOException{

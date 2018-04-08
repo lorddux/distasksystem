@@ -9,14 +9,14 @@ import ru.hse.lorddux.utils.ExecutorQueuePool;
 
 import java.util.Collection;
 
-public class DeleteQueueMessagesService implements Runnable {
-    private static Logger log_ = LogManager.getLogger(DeleteQueueMessagesService.class);
+public class DeleteQueueMessagesClient implements Runnable {
+    private static Logger log_ = LogManager.getLogger(DeleteQueueMessagesClient.class);
 
     private ExecutorQueuePool<CloudQueueMessage> queuePool;
     private QueueProcessor queueProcessor;
     private volatile boolean stopFlag = false;
 
-    public DeleteQueueMessagesService(Collection<PythonExecutor> executors, QueueProcessor queueProcessor) {
+    public DeleteQueueMessagesClient(Collection<PythonExecutor> executors, QueueProcessor queueProcessor) {
         queuePool = new ExecutorQueuePool<>(executors, PythonExecutor::getCompletedTaskIDQueue);
         this.queueProcessor = queueProcessor;
     }

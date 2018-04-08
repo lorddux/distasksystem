@@ -5,13 +5,12 @@ import org.apache.http.client.utils.URIBuilder;
 import ru.hse.lorddux.data.request.PCPropertiesData;
 
 import java.net.URISyntaxException;
-import java.util.Objects;
 
-public class ConfigurationRequestService implements RequestService<PCPropertiesData> {
+public class ConfigurationRequestCreator implements RequestCreator<PCPropertiesData> {
     PCPropertiesData requestData;
     URIBuilder uriBuilder;
 
-    public ConfigurationRequestService(PCPropertiesData requestData, String host, String path) {
+    public ConfigurationRequestCreator(PCPropertiesData requestData, String host, String path) {
         uriBuilder = new URIBuilder().setScheme("http").setHost(host).setPath(path);
         this.requestData = requestData;
     }

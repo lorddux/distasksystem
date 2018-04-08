@@ -9,15 +9,15 @@ import ru.hse.lorddux.utils.ExecutorQueuePool;
 
 import java.util.Collection;
 
-public class GetQueueMessagesService implements Runnable {
-    private static Logger log_ = LogManager.getLogger(GetQueueMessagesService.class);
+public class GetQueueMessagesClient implements Runnable {
+    private static Logger log_ = LogManager.getLogger(GetQueueMessagesClient.class);
     private static long SLEEP_TIME = 1000L;
 
     private ExecutorQueuePool<CloudQueueMessage> executorsQueuePool;
     private QueueProcessor queueProcessor;
     private volatile boolean stopFlag = false;
 
-    public GetQueueMessagesService(Collection<PythonExecutor> executors, QueueProcessor queueProcessor) {
+    public GetQueueMessagesClient(Collection<PythonExecutor> executors, QueueProcessor queueProcessor) {
         this.executorsQueuePool = new ExecutorQueuePool<>(executors, PythonExecutor::getTasksQueue);
         this.queueProcessor = queueProcessor;
     }

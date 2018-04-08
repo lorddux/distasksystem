@@ -8,9 +8,9 @@ import lombok.Setter;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.hse.lorddux.http.ConfigurationRequestService;
+import ru.hse.lorddux.http.ConfigurationRequestCreator;
 import ru.hse.lorddux.http.HttpHelperService;
-import ru.hse.lorddux.http.RequestService;
+import ru.hse.lorddux.http.RequestCreator;
 import ru.hse.lorddux.data.request.PCPropertiesData;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class ConfigurationClient implements Runnable {
 
     @Override
     public void run() {
-        RequestService<PCPropertiesData> requestService = new ConfigurationRequestService(requestData, configServerHost, configPath);
+        RequestCreator<PCPropertiesData> requestService = new ConfigurationRequestCreator(requestData, configServerHost, configPath);
         HttpUriRequest request;
         try {
             request = requestService.createRequest(requestData);

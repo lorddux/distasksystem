@@ -8,7 +8,7 @@ import java.util.List;
 public class Configuration {
     private static volatile Configuration instance;
 
-    private String storageAddress;
+    private StorageLayerConfig storageLayerConfig;
     private CodeConfig codeConfig;
     private QueueConfig queueConfig;
     private List<String> jvmParameters;
@@ -34,12 +34,19 @@ public class Configuration {
     public static class CodeConfig {
         private String address;
         private String mainFile;
+        private String command;
     }
 
     @Data
     public static class QueueConfig {
         private String storageConnectionString;
         private String queueName;
+    }
+
+    @Data
+    public static class StorageLayerConfig {
+        private String address;
+        private Integer port;
     }
 
     public enum WorkerType {
