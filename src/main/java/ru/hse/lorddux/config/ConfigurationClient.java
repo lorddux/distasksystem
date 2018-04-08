@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import ru.hse.lorddux.http.ConfigurationRequestCreator;
 import ru.hse.lorddux.http.HttpHelperService;
 import ru.hse.lorddux.http.RequestCreator;
-import ru.hse.lorddux.data.request.PCPropertiesData;
+import ru.hse.lorddux.data.request.PCParametersData;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -20,9 +20,9 @@ import java.net.URISyntaxException;
 public class ConfigurationClient implements Runnable {
     private static final Logger log_ = LogManager.getLogger(ConfigurationClient.class);
     private static long DEFAULT_SLEEP_TIME = 10000L;
+    private static final String configPath = "/config";
     @NonNull private String configServerHost;
-    @NonNull private String configPath;
-    @NonNull private PCPropertiesData requestData;
+    @NonNull private PCParametersData requestData;
 
     @Setter
     @Getter
@@ -35,7 +35,7 @@ public class ConfigurationClient implements Runnable {
 
     @Override
     public void run() {
-        RequestCreator<PCPropertiesData> requestService = new ConfigurationRequestCreator(requestData, configServerHost, configPath);
+        RequestCreator<PCParametersData> requestService = new ConfigurationRequestCreator(requestData, configServerHost, configPath);
         HttpUriRequest request;
         try {
             request = requestService.createRequest(requestData);
@@ -64,7 +64,7 @@ public class ConfigurationClient implements Runnable {
                 try {
                     Thread.sleep(sleepTime);
                 } catch (InterruptedException ex) {
-                    log_.debug("Unexpected thread interruption");
+                    return;
                 }
             }
         }

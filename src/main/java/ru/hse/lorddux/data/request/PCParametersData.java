@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PCPropertiesData implements RequestData {
+public class PCParametersData implements RequestData {
     private Integer cpu;
     private Integer ram;
     private Integer hdd;

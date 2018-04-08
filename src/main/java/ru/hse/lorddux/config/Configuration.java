@@ -5,6 +5,8 @@ import lombok.*;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Configuration {
     private static volatile Configuration instance;
 
@@ -13,6 +15,7 @@ public class Configuration {
     private QueueConfig queueConfig;
     private List<String> jvmParameters;
     private WorkerType type;
+    private Integer workerCapacity;
 
     public static Configuration getInstance() {
         Configuration localInstance = instance;
@@ -31,6 +34,8 @@ public class Configuration {
     }
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class CodeConfig {
         private String address;
         private String mainFile;
@@ -38,12 +43,16 @@ public class Configuration {
     }
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class QueueConfig {
         private String storageConnectionString;
         private String queueName;
     }
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class StorageLayerConfig {
         private String address;
         private Integer port;

@@ -28,7 +28,6 @@ public class Adapter implements Service {
     private static Logger log_ = LogManager.getLogger(Adapter.class);
 
     @NonNull private Configuration configuration;
-    @NonNull private Integer capacity;
     private Collection<PythonExecutor> executors;
     private GetQueueMessagesClient getMessagesClient;
     private DeleteQueueMessagesClient deleteMessagesClient;
@@ -68,7 +67,7 @@ public class Adapter implements Service {
 
     private void init() throws Exception {
         executors = new LinkedList<>();
-        for (int i = 0; i < capacity; i++) {
+        for (int i = 0; i < configuration.getWorkerCapacity(); i++) {
             executors.add(new PythonExecutor(
                     configuration.getCodeConfig().getCommand(),
                     configuration.getCodeConfig().getMainFile(),

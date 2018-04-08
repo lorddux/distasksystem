@@ -46,5 +46,6 @@ dependencies {
     compile group: 'com.google.code.gson', name: 'gson', version: '2.3.1'
     compile group: 'commons-io', name: 'commons-io' , version : '2.5'
     compile group: 'com.microsoft.azure', name: 'azure-storage', version: '7.0.0'
+    compile group: 'com.beust', name: 'jcommander', version: '1.72'
     compileOnly 'org.projectlombok:lombok:1.16.20'
 }

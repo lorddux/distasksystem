@@ -2,20 +2,20 @@ package ru.hse.lorddux.http;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
-import ru.hse.lorddux.data.request.PCPropertiesData;
+import ru.hse.lorddux.data.request.PCParametersData;
 
 import java.net.URISyntaxException;
 
-public class ConfigurationRequestCreator implements RequestCreator<PCPropertiesData> {
-    PCPropertiesData requestData;
+public class ConfigurationRequestCreator implements RequestCreator<PCParametersData> {
+    PCParametersData requestData;
     URIBuilder uriBuilder;
 
-    public ConfigurationRequestCreator(PCPropertiesData requestData, String host, String path) {
+    public ConfigurationRequestCreator(PCParametersData requestData, String host, String path) {
         uriBuilder = new URIBuilder().setScheme("http").setHost(host).setPath(path);
         this.requestData = requestData;
     }
 
-    public HttpGet createRequest(PCPropertiesData requestData) throws URISyntaxException {
+    public HttpGet createRequest(PCParametersData requestData) throws URISyntaxException {
         setParameterIfNotNull(uriBuilder, "cpu", this.requestData.getCpu());
         setParameterIfNotNull(uriBuilder, "ram", this.requestData.getRam());
         setParameterIfNotNull(uriBuilder, "hdd", this.requestData.getHdd());
