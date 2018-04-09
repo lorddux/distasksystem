@@ -10,13 +10,23 @@ import ru.hse.lorddux.config.Configuration;
 import ru.hse.lorddux.config.ConfigurationClient;
 import ru.hse.lorddux.data.request.PCParametersData;
 
-public final class Starter {
+public final class Starter implements Service {
     private static final Logger log_ = LogManager.getLogger(Starter.class);
 
     @Getter
     @Setter
     @Parameter(names={"-h", "--host"}, required = true)
     private String configHost;
+
+    @Override
+    public void stop() {
+
+    }
+
+    @Override
+    public void start() throws Exception {
+
+    }
 
     public static void main(String[] args) {
         Starter starter = new Starter();

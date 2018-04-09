@@ -1,5 +1,8 @@
 package ru.hse.lorddux;
 
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -15,6 +18,8 @@ import ru.hse.lorddux.queue.QueueProcessorImpl;
 import ru.hse.lorddux.transport.TCPTransport;
 import ru.hse.lorddux.transport.TransportManager;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -99,5 +104,17 @@ public class Adapter implements Service {
         } catch (InterruptedException e) {
 
         }
+    }
+
+    public static void main(String[] args) throws Exception {
+        HttpServer server = HttpServer.create();
+        server.bind(new InetSocketAddress(8765), 0);
+        server.createContext("/", new HttpHandler() {
+            @Override
+            public void handle(HttpExchange exchange) throws IOException {
+                System.out.println("KEK");
+            }
+        });
+        server.start();
     }
 }
