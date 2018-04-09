@@ -3,8 +3,7 @@ package ru.hse.lorddux;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.hse.lorddux.config.Configuration;
@@ -28,11 +27,10 @@ import java.util.LinkedList;
  * obtains configuration.
  * starts up executors, queue processors
  */
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class Adapter implements Service {
     private static Logger log_ = LogManager.getLogger(Adapter.class);
 
-    @NonNull private Configuration configuration;
     private Collection<PythonExecutor> executors;
     private GetQueueMessagesClient getMessagesClient;
     private DeleteQueueMessagesClient deleteMessagesClient;
@@ -40,9 +38,10 @@ public class Adapter implements Service {
     private Thread getMessagesClientThread;
     private Thread deleteMessagesClint;
     private Thread storageLayerConnectorThread;
+    private boolean runningFlag = false;
 
     @Override
-    public void start() {
+    synchronized public void start() {
         try {
             init();
         } catch (Exception e) {
@@ -55,10 +54,16 @@ public class Adapter implements Service {
         getMessagesClientThread.start();
         deleteMessagesClint.start();
         storageLayerConnectorThread.start();
+        runningFlag = true;
     }
 
     @Override
-    public void stop() {
+    public boolean isRunning() {
+        return runningFlag;
+    }
+
+    @Override
+    synchronized public void stop() {
         getMessagesClient.stop();
         executors.parallelStream().forEach(PythonExecutor::stopThread);
         deleteMessagesClient.stop();
@@ -68,9 +73,11 @@ public class Adapter implements Service {
         joinThread(getMessagesClientThread);
         joinThread(deleteMessagesClint);
         joinThread(storageLayerConnectorThread);
+        runningFlag = false;
     }
 
     private void init() throws Exception {
+        Configuration configuration = Configuration.getInstance();
         executors = new LinkedList<>();
         for (int i = 0; i < configuration.getWorkerCapacity(); i++) {
             executors.add(new PythonExecutor(
@@ -107,14 +114,6 @@ public class Adapter implements Service {
     }
 
     public static void main(String[] args) throws Exception {
-        HttpServer server = HttpServer.create();
-        server.bind(new InetSocketAddress(8765), 0);
-        server.createContext("/", new HttpHandler() {
-            @Override
-            public void handle(HttpExchange exchange) throws IOException {
-                System.out.println("KEK");
-            }
-        });
-        server.start();
+
     }
 }

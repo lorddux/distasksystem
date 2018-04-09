@@ -43,7 +43,7 @@ public class StorageLayerConnectorImpl implements StorageLayerConnector, Runnabl
             while (!sent) {
                 tries++;
                 try {
-                    transportManager.sendMessage(result);
+                    transportManager.sendMessageLine(result);
                     sent = true;
                 } catch (IOException e) {
                     log_.warn(String.format("Can not send result. Retrying #%s", tries), e);

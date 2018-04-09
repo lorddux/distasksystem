@@ -16,6 +16,7 @@ public class Configuration {
     private List<String> jvmParameters;
     private WorkerType type;
     private Integer workerCapacity;
+    private String authorization;
 
     public static Configuration getInstance() {
         Configuration localInstance = instance;
