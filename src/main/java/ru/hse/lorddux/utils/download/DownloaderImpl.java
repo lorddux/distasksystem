@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jgit.api.CloneCommand;
 import ru.hse.lorddux.exception.DownloadException;
 
 public class DownloaderImpl implements Downloader {
@@ -42,5 +43,4 @@ public class DownloaderImpl implements Downloader {
         }
         return false;
     }
-
 }

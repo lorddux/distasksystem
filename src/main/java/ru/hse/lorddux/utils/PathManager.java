@@ -18,7 +18,7 @@ public class PathManager {
         appendDir(path, clazz.getCanonicalName());
         File checkDir = new File(path.toString());
         if (! checkDir.exists()) {
-            checkDir.mkdirs();
+//            checkDir.mkdirs();
         }
         return path.toString();
     }
@@ -43,7 +43,7 @@ public class PathManager {
     public static boolean createDir(String dir) {
         File checkDir = new File(dir);
         if (! checkDir.exists()) {
-            checkDir.mkdirs();
+//            checkDir.mkdirs();
             return true;
         }
         return false;
