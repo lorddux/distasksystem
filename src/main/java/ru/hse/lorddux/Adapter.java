@@ -1,15 +1,12 @@
 package ru.hse.lorddux;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
 import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.hse.lorddux.config.Configuration;
 import ru.hse.lorddux.connector.StorageLayerConnector;
 import ru.hse.lorddux.connector.StorageLayerConnectorImpl;
-import ru.hse.lorddux.executor.PythonExecutor;
+import ru.hse.lorddux.executors.PythonExecutor;
 import ru.hse.lorddux.queue.DeleteQueueMessagesClient;
 import ru.hse.lorddux.queue.GetQueueMessagesClient;
 import ru.hse.lorddux.queue.QueueProcessor;
@@ -17,8 +14,6 @@ import ru.hse.lorddux.queue.QueueProcessorImpl;
 import ru.hse.lorddux.transport.TCPTransport;
 import ru.hse.lorddux.transport.TransportManager;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -42,19 +37,22 @@ public class Adapter implements Service {
 
     @Override
     synchronized public void start() {
+        log_.info("Initialize services");
         try {
             init();
         } catch (Exception e) {
-            log_.fatal("Can not init resources", e);
+            log_.fatal("Can not init services", e);
             System.exit(1);
             return;
         }
 
+        log_.info("Starting services");
         executors.parallelStream().forEach(Thread::start);
         getMessagesClientThread.start();
         deleteMessagesClint.start();
         storageLayerConnectorThread.start();
         runningFlag = true;
+        log_.info("All services were successfully started");
     }
 
     @Override
@@ -64,6 +62,7 @@ public class Adapter implements Service {
 
     @Override
     synchronized public void stop() {
+        log_.info("Stopping services");
         getMessagesClient.stop();
         executors.parallelStream().forEach(PythonExecutor::stopThread);
         deleteMessagesClient.stop();
@@ -74,6 +73,7 @@ public class Adapter implements Service {
         joinThread(deleteMessagesClint);
         joinThread(storageLayerConnectorThread);
         runningFlag = false;
+        log_.info("All services were successfully stopped");
     }
 
     private void init() throws Exception {

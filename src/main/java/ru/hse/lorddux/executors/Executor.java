@@ -1,4 +1,4 @@
-package ru.hse.lorddux.executor;
+package ru.hse.lorddux.executors;
 
 public interface Executor extends Runnable {
 }

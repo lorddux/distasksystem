@@ -1,19 +1,16 @@
-package ru.hse.lorddux.executor;
+package ru.hse.lorddux.executors;
 
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.queue.CloudQueueMessage;
 import lombok.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.hse.lorddux.exception.ExecutorException;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 @AllArgsConstructor
 @RequiredArgsConstructor
@@ -69,6 +66,7 @@ public class PythonExecutor extends Thread {
 
     //TODO
     public void run() {
+        log_.info("run()");
         String result;
         CloudQueueMessage task;
         String taskId = "-1";
@@ -87,12 +85,12 @@ public class PythonExecutor extends Thread {
                     while ((! completedTaskIDQueue.offer(task, 1, TimeUnit.SECONDS))    && (! stopFlag));
                 } catch (IOException e) {
                     log_.error(String.format("Error while executing task %s", taskId), e);
+                }  catch (StorageException e) {
+                    log_.warn(String.format("Can not process task %s", taskId), e);
                 }
             }
         } catch (InterruptedException e) {
-            log_.warn(String.format("Thread %s was interrupted!", Thread.currentThread().getName()));
-        } catch (StorageException e) {
-            log_.warn("Can not process task", e);
+            log_.info("Exiting");
         }
     }
 

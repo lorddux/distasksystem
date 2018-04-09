@@ -19,7 +19,7 @@ import java.net.URISyntaxException;
 @RequiredArgsConstructor
 public class ConfigurationClient implements Runnable {
     private static final Logger log_ = LogManager.getLogger(ConfigurationClient.class);
-    private static long DEFAULT_SLEEP_TIME = 10000L;
+    private static long DEFAULT_SLEEP_TIME = 3000L;
     private static final String configPath = "/config";
     @NonNull private String configServerHost;
     @NonNull private PCParametersData requestData;

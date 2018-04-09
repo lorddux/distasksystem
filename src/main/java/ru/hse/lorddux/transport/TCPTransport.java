@@ -31,6 +31,7 @@ public class TCPTransport implements Transport {
 
     @Override
     public void disconnect() throws IOException {
+        if (clientSocket == null) return;
         clientSocket.shutdownOutput();
         clientSocket.shutdownInput();
         clientSocket.close();

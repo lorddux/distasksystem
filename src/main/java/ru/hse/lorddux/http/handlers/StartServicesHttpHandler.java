@@ -1,13 +1,15 @@
-package ru.hse.lorddux;
+package ru.hse.lorddux.http.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
+import ru.hse.lorddux.Adapter;
 
 import java.io.IOException;
 
-public class StopServicesHttpHandler extends BaseHttpHandler {
+public class StartServicesHttpHandler extends BaseHttpHandler {
+
     private Adapter adapter;
 
-    public StopServicesHttpHandler(String authorization, Adapter adapter) {
+    public StartServicesHttpHandler(String authorization, Adapter adapter) {
         super(authorization);
         methodName = "POST";
         this.adapter = adapter;
@@ -15,8 +17,8 @@ public class StopServicesHttpHandler extends BaseHttpHandler {
 
     @Override
     protected void processGoodRequest(HttpExchange exchange) throws IOException {
-        if (adapter.isRunning()) {
-            adapter.stop();
+        if (! adapter.isRunning()) {
+            adapter.start();
             goodResponse(exchange, "OK");
         } else {
             goodResponse(exchange, "NOT_OK");

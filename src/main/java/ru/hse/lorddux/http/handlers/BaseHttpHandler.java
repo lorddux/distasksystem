@@ -1,4 +1,4 @@
-package ru.hse.lorddux;
+package ru.hse.lorddux.http.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -22,7 +22,7 @@ public abstract class BaseHttpHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        log_.info(String.format("Received request"));
+        log_.info(String.format("Received request from %s", exchange.getRemoteAddress()));
         String requestMethod = exchange.getRequestMethod();
         String authorization = exchange.getRequestHeaders().get("x-auth").get(0);
         if (requestMethod.equalsIgnoreCase(methodName)) {
@@ -36,6 +36,7 @@ public abstract class BaseHttpHandler implements HttpHandler {
             String errorMessage = String.format(BAD_METHOD_MESSAGE, requestMethod);
             errorResponse(exchange, errorMessage);
         }
+        exchange.close();
     }
 
     protected abstract void processGoodRequest(HttpExchange exchange) throws IOException;

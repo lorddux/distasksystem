@@ -2,7 +2,7 @@ package ru.hse.lorddux.connector;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.hse.lorddux.executor.PythonExecutor;
+import ru.hse.lorddux.executors.PythonExecutor;
 import ru.hse.lorddux.transport.TCPTransport;
 import ru.hse.lorddux.transport.TransportManager;
 import ru.hse.lorddux.utils.ExecutorQueuePool;

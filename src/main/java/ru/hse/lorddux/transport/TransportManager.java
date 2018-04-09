@@ -10,13 +10,14 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class TransportManager {
     private static final Logger log_ = LogManager.getLogger(TransportManager.class);
-    private static long SLEEP_RETRY_TIME = 5000;
+    private static long SLEEP_RETRY_TIME = 3000;
     private volatile boolean stop = false;
 
     @NonNull
     private Transport transport;
 
     public void openConnection(int retriesNumber) throws IOException {
+        log_.info(String.format("Connecting to %s:%d", transport.getAddress(), transport.getPort()));
         boolean opened = false;
         int retriesCount = 0;
         while (! opened && ! stop) {
@@ -37,6 +38,7 @@ public class TransportManager {
                 }
             }
         }
+        log_.info(String.format("Successfully connected to %s:%d", transport.getAddress(), transport.getPort()));
     }
 
     public void stop() {

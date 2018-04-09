@@ -4,7 +4,7 @@ import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.queue.CloudQueueMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.hse.lorddux.executor.PythonExecutor;
+import ru.hse.lorddux.executors.PythonExecutor;
 import ru.hse.lorddux.utils.ExecutorQueuePool;
 
 import java.util.Collection;
@@ -28,6 +28,7 @@ public class GetQueueMessagesClient implements Runnable {
 
     @Override
     public void run() {
+        log_.info("run()");
         while (!stopFlag) {
             try {
                 Iterable<CloudQueueMessage> messages = queueProcessor.getNextBatch(10, 300);

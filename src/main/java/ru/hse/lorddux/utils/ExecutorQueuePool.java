@@ -1,7 +1,7 @@
 package ru.hse.lorddux.utils;
 
 import com.google.common.collect.Iterators;
-import ru.hse.lorddux.executor.PythonExecutor;
+import ru.hse.lorddux.executors.PythonExecutor;
 
 import java.util.Collection;
 import java.util.Iterator;
