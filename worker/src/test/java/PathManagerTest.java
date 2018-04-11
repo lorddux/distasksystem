@@ -1,6 +1,6 @@
 import org.junit.Assert;
 import org.junit.Test;
-import ru.hse.lorddux.utils.PathManager;
+import ru.lorddux.distasksystem.worker.utils.PathManager;
 
 import java.io.File;
 
