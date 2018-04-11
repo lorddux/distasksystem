@@ -14,8 +14,10 @@ import ru.hse.lorddux.exception.DownloadException;
 public class DownloaderImpl implements Downloader {
     private final static Logger log_ = LogManager.getLogger(Downloader.class);
 
-    public void download(URL url, String dstFilePath) throws DownloadException {
+    public void download(String urlString, String dstFilePath) throws DownloadException {
+
         try (OutputStream output = new FileOutputStream(new File(dstFilePath))) {
+            URL url = new URL(urlString);
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             Map<String, List<String>> header = http.getHeaderFields();
             while (isRedirected(header)) {

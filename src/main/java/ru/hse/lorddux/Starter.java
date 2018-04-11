@@ -3,8 +3,6 @@ package ru.hse.lorddux;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.HttpsConfigurator;
-import com.sun.net.httpserver.HttpsServer;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;

@@ -31,14 +31,14 @@ public class GetQueueMessagesClient implements Runnable {
         log_.info("run()");
         while (!stopFlag) {
             try {
-                Iterable<CloudQueueMessage> messages = queueProcessor.getNextBatch(10, 300);
-                executorsQueuePool.offerAll(messages);
+                Iterable<CloudQueueMessage> messages = queueProcessor.getNextBatch(10, 60);
+                executorsQueuePool.offerAll(messages, 100L);
             } catch (StorageException e) {
                 log_.error("Can non get a task", e);
                 try {
                     Thread.sleep(SLEEP_TIME);
                 } catch (InterruptedException ex) {
-                    log_.fatal("Thread was interrupted", ex);
+                    log_.info("Exiting");
                     break;
                 }
             }

@@ -44,4 +44,17 @@ public final class QueueProcessorImpl implements QueueProcessor {
         queue.deleteMessage(message);
     }
 
+    public void putMessage(String message) throws Exception {
+        queue.addMessage(new CloudQueueMessage(message));
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        QueueProcessorImpl queueProcessor = new QueueProcessorImpl("DefaultEndpointsProtocol=https;AccountName=testqueueaccount;AccountKey=KQIwlOlcIYV8hFjyN/Qpyo7lCvEkMj2yMVBEEkU7fnGrNaflj0pk7twV50dYwGDjBAm8VjmvfOA4rjJ/yvUmHQ==;EndpointSuffix=core.windows.net", "testqueue");
+        for (int i = 0; i < 100; i++) {
+            queueProcessor.putMessage("Kek" + String.valueOf(i));
+        }
+
+    }
+
 }

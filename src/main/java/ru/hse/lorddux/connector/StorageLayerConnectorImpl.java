@@ -38,6 +38,7 @@ public class StorageLayerConnectorImpl implements StorageLayerConnector, Runnabl
         }
         while (!stop) {
             String result = resultQueuePool.poll(1000L);
+            log_.trace(String.format("Sending the result to StorageLayer: %s", result));
             boolean sent = false;
             int tries = 0;
             while (!sent) {
@@ -55,18 +56,5 @@ public class StorageLayerConnectorImpl implements StorageLayerConnector, Runnabl
         } catch (IOException e) {
             log_.error(e);
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        TransportManager m = new TransportManager(new TCPTransport("192.168.29.23", 1234));
-        Thread k = new Thread(() -> {try {
-            m.openConnection(-1);
-        } catch (IOException e) {
-        }
-        });
-
-        k.start();
-        m.stop();
-        k.join();
     }
 }

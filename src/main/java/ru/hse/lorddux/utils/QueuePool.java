@@ -22,7 +22,7 @@ public interface QueuePool<T> {
      * adds an item to one of queue of this queuePool
      * @param item - item to add
      */
-    void add(T item);
+    void add(T item, long sleepTimeMillis);
 
-    void offerAll(Iterable<T> items);
+    void offerAll(Iterable<T> items, long sleepTimeMillis);
 }

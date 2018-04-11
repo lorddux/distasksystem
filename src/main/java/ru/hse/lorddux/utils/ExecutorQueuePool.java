@@ -40,8 +40,19 @@ public class ExecutorQueuePool<T> implements QueuePool<T>{
     }
 
     @Override
-    public void add(T item) {
-        while (!queuePool.next().offer(item));
+    public void add(T item, long sleepTimeMillis) {
+        int count = 0;
+        while (!queuePool.next().offer(item)) {
+            count++;
+            if (count == queueNum) {
+                count = 0;
+                try {
+                    Thread.sleep(sleepTimeMillis);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        }
     }
 
     @Override
@@ -52,10 +63,10 @@ public class ExecutorQueuePool<T> implements QueuePool<T>{
     }
 
     @Override
-    public void offerAll(Iterable<T> items) {
+    public void offerAll(Iterable<T> items, long sleepTimeMillis) {
         Iterator<T> it = items.iterator();
         while (it.hasNext()) {
-            add(it.next());
+            add(it.next(), sleepTimeMillis);
         }
     }
 }

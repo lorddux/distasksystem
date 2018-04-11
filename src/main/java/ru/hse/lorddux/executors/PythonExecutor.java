@@ -5,6 +5,7 @@ import com.microsoft.azure.storage.queue.CloudQueueMessage;
 import lombok.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.hse.lorddux.exception.ExecutorException;
 
 import java.io.IOException;
 import java.util.*;
@@ -46,6 +47,7 @@ public class PythonExecutor extends Thread {
     private String pythonCommand = DEFAULT_PYTHON_COMMAND;
 
     private volatile boolean stopFlag = false;
+    private Postprocessor postprocessor;
 
     public PythonExecutor(String commandPath, String codePath, List<String> args, Integer queueSize) {
         this(commandPath, codePath, queueSize);
@@ -58,6 +60,7 @@ public class PythonExecutor extends Thread {
         this.tasksQueue = new ArrayBlockingQueue<>(queueSize);
         this.completedTaskIDQueue = new ArrayBlockingQueue<>(queueSize);
         this.resultQueue = new ArrayBlockingQueue<>(queueSize);
+        this.postprocessor = new JsonPostprocessor();
     }
 
     public void stopThread() {
@@ -68,6 +71,7 @@ public class PythonExecutor extends Thread {
     public void run() {
         log_.info("run()");
         String result;
+        String finalResult;
         CloudQueueMessage task;
         String taskId = "-1";
         try {
@@ -81,7 +85,8 @@ public class PythonExecutor extends Thread {
                     taskId = task.getMessageId();
                     result = processTask(task.getMessageContentAsString());
                     log_.trace(String.format("Task %s executed. Result: %s", taskId, result));
-                    while ((! resultQueue.offer(result, 1, TimeUnit.SECONDS))           && (! stopFlag));
+                        finalResult = postprocessor.giveThisMethodName(result, task);
+                    while ((! resultQueue.offer(finalResult, 1, TimeUnit.SECONDS))           && (! stopFlag));
                     while ((! completedTaskIDQueue.offer(task, 1, TimeUnit.SECONDS))    && (! stopFlag));
                 } catch (IOException e) {
                     log_.error(String.format("Error while executing task %s", taskId), e);
@@ -91,6 +96,8 @@ public class PythonExecutor extends Thread {
             }
         } catch (InterruptedException e) {
             log_.info("Exiting");
+        } catch (ExecutorException e) {
+            log_.fatal("Exiting", e);
         }
     }
 

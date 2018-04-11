@@ -50,12 +50,24 @@ public class TransportManager {
     }
 
     public void reopenConnection() throws IOException {
-        closeConnection();
+        try {
+            closeConnection();
+        } catch (IOException e) {
+            log_.debug("Connection is closed", e);
+        }
         openConnection(0);
     }
 
     public void sendMessageLine(String message) throws IOException {
-        transport.sendData(message + '\n');
+        boolean sent = false;
+        while (! sent) {
+            try {
+                transport.sendData(message + '\n');
+                sent = true;
+            } catch (IOException e) {
+                reopenConnection();
+            }
+        }
     }
 
     public void sendMessage(String message) throws IOException {

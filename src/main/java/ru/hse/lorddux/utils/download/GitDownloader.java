@@ -10,10 +10,10 @@ import java.net.URL;
 public class GitDownloader implements Downloader {
 
     @Override
-    public void download(URL url, String dstFilePath) throws DownloadException {
+    public void download(String url, String dstFilePath) throws DownloadException {
         CloneCommand command = new CloneCommand();
-        command = command.setDirectory(new File("var"));
-        command = command.setURI("https://github.com/lorddux/oop-1.git");
+        command = command.setDirectory(new File(dstFilePath));
+        command = command.setURI(url);
         try {
             command.call();
         } catch (GitAPIException e) {
