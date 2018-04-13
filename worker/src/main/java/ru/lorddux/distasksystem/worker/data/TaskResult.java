@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class TaskResult {
     private String taskId;
     private String taskSentence;
-    private int resultId;
+    private int resultNumber;
     private String result;
     private long timestamp;
 }

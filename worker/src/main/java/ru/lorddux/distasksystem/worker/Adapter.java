@@ -7,7 +7,9 @@ import org.apache.logging.log4j.Logger;
 import ru.lorddux.distasksystem.worker.config.Configuration;
 import ru.lorddux.distasksystem.worker.connector.StorageLayerConnector;
 import ru.lorddux.distasksystem.worker.connector.StorageLayerConnectorImpl;
+import ru.lorddux.distasksystem.worker.executors.CommandExecutor;
 import ru.lorddux.distasksystem.worker.executors.ExecutorImpl;
+import ru.lorddux.distasksystem.worker.executors.PythonExecutor;
 import ru.lorddux.distasksystem.worker.queue.DeleteQueueMessagesClient;
 import ru.lorddux.distasksystem.worker.queue.GetQueueMessagesClient;
 import ru.lorddux.distasksystem.worker.queue.QueueProcessor;
@@ -98,11 +100,18 @@ public class Adapter implements Service {
 
         log_.info("Initializing executors");
         for (int i = 0; i < configuration.getWorkerCapacity(); i++) {
-            executors.add(new ExecutorImpl(
-                    configuration.getCodeConfig().getCommand(),
-                    DEFAULT_SUBDIRECTORY + "/" + configuration.getCodeConfig().getMainFile(),
-                    ExecutorImpl.DEFAULT_QUEUE_SIZE
-            ));
+            if (configuration.getCodeConfig().getMainFile() != null) {
+                executors.add(new PythonExecutor(
+                        configuration.getCodeConfig().getCommand(),
+                        DEFAULT_SUBDIRECTORY + "/" + configuration.getCodeConfig().getMainFile(),
+                        ExecutorImpl.DEFAULT_QUEUE_SIZE
+                ));
+            } else {
+                executors.add(new CommandExecutor(
+                        configuration.getCodeConfig().getCommand(),
+                        ExecutorImpl.DEFAULT_QUEUE_SIZE
+                ));
+            }
         }
 
         log_.info("Creating queue processor");

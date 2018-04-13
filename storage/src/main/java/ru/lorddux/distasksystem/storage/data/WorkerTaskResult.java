@@ -4,7 +4,9 @@ import lombok.Data;
 
 @Data
 public class WorkerTaskResult {
-    private String id;
+    private String taskId;
+    private String taskSentence;
+    private int resultNumber;
     private String result;
     private long timestamp;
 }

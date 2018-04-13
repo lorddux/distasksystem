@@ -45,7 +45,7 @@ public class Connector {
 
     public void setParameters(WorkerTaskResult result) throws SQLException {
         log_.debug(String.format("Set a new raw with parameters %s", result.toString()));
-        preparedStatement.setString(1, result.getId());
+        preparedStatement.setString(1, result.getTaskId());
     }
 
     public void executeBatch() throws SQLException {

@@ -13,55 +13,30 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-@AllArgsConstructor
-@RequiredArgsConstructor
-public class ExecutorImpl extends Thread {
+public abstract class ExecutorImpl extends Thread {
     private static final Logger log_ = LogManager.getLogger(ExecutorImpl.class);
-    private static final String DEFAULT_PYTHON_COMMAND = "python";
     private static final int SLEEP_TIME = 1000;
     public static int DEFAULT_QUEUE_SIZE = 100;
 
     @Getter
-    @NonNull
     private BlockingQueue<CloudQueueMessage> tasksQueue;
 
     @Getter
-    @NonNull
     private BlockingQueue<CloudQueueMessage> completedTaskIDQueue;
 
     @Getter
-    @NonNull
     private BlockingQueue<String> resultQueue;
-
-    @Setter
-    @Getter
-    @NonNull
-    private String codePath;
-
-    @Setter
-    @Getter
-    private List<String> args = Collections.emptyList();
-
-    @Setter
-    @Getter
-    private String command = DEFAULT_PYTHON_COMMAND;
 
     private volatile boolean stopFlag = false;
     private Postprocessor postprocessor;
 
-    public ExecutorImpl(String commandPath, String codePath, List<String> args, Integer queueSize) {
-        this(commandPath, codePath, queueSize);
-        this.args = args;
-    }
-
-    public ExecutorImpl(String commandPath, String codePath, Integer queueSize) {
-        this.command = commandPath;
-        this.codePath = codePath;
+    public ExecutorImpl(Integer queueSize) {
         this.tasksQueue = new ArrayBlockingQueue<>(queueSize);
         this.completedTaskIDQueue = new ArrayBlockingQueue<>(queueSize);
         this.resultQueue = new ArrayBlockingQueue<>(queueSize);
         this.postprocessor = new JsonPostprocessor();
     }
+
 
     public void stopThread() {
         stopFlag = false;
@@ -113,14 +88,5 @@ public class ExecutorImpl extends Thread {
         }
     }
 
-    private Process buildProcess(String task) throws IOException{
-        List<String> pbArguments = new ArrayList<>();
-        pbArguments.add(command);
-        pbArguments.add(codePath);
-        pbArguments.add(task);
-        pbArguments.addAll(args);
-        log_.debug(String.format("Run command: %s", pbArguments.stream().reduce("", (s, s2) -> String.format("%s %s", s, s2))));
-        ProcessBuilder p = new ProcessBuilder(pbArguments);
-        return p.start();
-    }
+    protected abstract Process buildProcess(String task) throws IOException;
 }
