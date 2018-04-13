@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TaskResult {
-    private String resultString;
     private String taskId;
+    private String taskSentence;
+    private int resultId;
+    private String result;
     private long timestamp;
 }

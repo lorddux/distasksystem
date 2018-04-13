@@ -7,17 +7,19 @@ import org.apache.logging.log4j.Logger;
 import ru.lorddux.distasksystem.worker.config.Configuration;
 import ru.lorddux.distasksystem.worker.connector.StorageLayerConnector;
 import ru.lorddux.distasksystem.worker.connector.StorageLayerConnectorImpl;
-import ru.lorddux.distasksystem.worker.executors.PythonExecutor;
+import ru.lorddux.distasksystem.worker.executors.ExecutorImpl;
 import ru.lorddux.distasksystem.worker.queue.DeleteQueueMessagesClient;
 import ru.lorddux.distasksystem.worker.queue.GetQueueMessagesClient;
 import ru.lorddux.distasksystem.worker.queue.QueueProcessor;
 import ru.lorddux.distasksystem.worker.queue.QueueProcessorImpl;
 import ru.lorddux.distasksystem.worker.transport.TCPTransport;
 import ru.lorddux.distasksystem.worker.transport.TransportManager;
+import ru.lorddux.distasksystem.worker.utils.PipInstaller;
 import ru.lorddux.distasksystem.worker.utils.download.Downloader;
 import ru.lorddux.distasksystem.worker.utils.download.GitDownloader;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -31,7 +33,7 @@ public class Adapter implements Service {
     private static Logger log_ = LogManager.getLogger(Adapter.class);
     private static final String DEFAULT_SUBDIRECTORY = "var";
 
-    private Collection<PythonExecutor> executors;
+    private Collection<ExecutorImpl> executors;
     private GetQueueMessagesClient getMessagesClient;
     private DeleteQueueMessagesClient deleteMessagesClient;
     private StorageLayerConnector storageLayerConnector;
@@ -39,7 +41,7 @@ public class Adapter implements Service {
     private Thread deleteMessagesClint;
     private Thread storageLayerConnectorThread;
     private Downloader downloader;
-    private boolean runningFlag = false;
+    private volatile boolean runningFlag = false;
 
     @Override
     synchronized public void start() {
@@ -78,7 +80,7 @@ public class Adapter implements Service {
     synchronized public void stop() {
         log_.info("Stopping services");
         getMessagesClient.stop();
-        executors.parallelStream().forEach(PythonExecutor::stopThread);
+        executors.parallelStream().forEach(ExecutorImpl::stopThread);
         deleteMessagesClient.stop();
         storageLayerConnector.stop();
 
@@ -96,14 +98,12 @@ public class Adapter implements Service {
 
         log_.info("Initializing executors");
         for (int i = 0; i < configuration.getWorkerCapacity(); i++) {
-            executors.add(new PythonExecutor(
+            executors.add(new ExecutorImpl(
                     configuration.getCodeConfig().getCommand(),
                     DEFAULT_SUBDIRECTORY + "/" + configuration.getCodeConfig().getMainFile(),
-                    PythonExecutor.DEFAULT_QUEUE_SIZE
+                    ExecutorImpl.DEFAULT_QUEUE_SIZE
             ));
         }
-
-        downloader = new GitDownloader();
 
         log_.info("Creating queue processor");
         QueueProcessor queueProcessor = new QueueProcessorImpl(
@@ -132,9 +132,16 @@ public class Adapter implements Service {
             log_.debug(e);
         }
 
+        downloader = new GitDownloader();
         log_.info(String.format("Downloading code from %s", configuration.getCodeConfig().getAddress()));
         downloader.download(configuration.getCodeConfig().getAddress(), DEFAULT_SUBDIRECTORY);
 
+        log_.info("Installing requirements");
+        try {
+            PipInstaller.installRequirements(DEFAULT_SUBDIRECTORY + "/requirements.txt");
+        } catch (IOException e) {
+            log_.info(String.format("Can not install requirements: %s", e.getMessage()));
+        }
         getMessagesClientThread = new Thread(getMessagesClient);
         deleteMessagesClint = new Thread(deleteMessagesClient);
         storageLayerConnectorThread = new Thread(storageLayerConnector);

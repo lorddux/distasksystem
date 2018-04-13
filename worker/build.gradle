@@ -19,7 +19,7 @@ jar {
     manifest {
         attributes 'Implementation-Title': 'Gradle Quickstart',
                 'Implementation-Version': version
-        attributes 'Main-Class': 'ru.lorddux.distasksystem.worker.Adapter'
+        attributes 'Main-Class': 'ru.lorddux.distasksystem.worker.Starter'
     }
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }

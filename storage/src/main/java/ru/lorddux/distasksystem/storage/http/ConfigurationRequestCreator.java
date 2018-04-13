@@ -1,8 +1,8 @@
-package ru.lorddux.distasksystem.worker.http;
+package ru.lorddux.distasksystem.storage.http;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
-import ru.lorddux.distasksystem.worker.data.request.PCParametersData;
+import ru.lorddux.distasksystem.storage.data.request.PCParametersData;
 
 import java.net.URISyntaxException;
 
@@ -21,7 +21,7 @@ public class ConfigurationRequestCreator implements RequestCreator<PCParametersD
         setParameterIfNotNull(uriBuilder, "hdd", this.requestData.getHdd());
         setParameterIfNotNull(uriBuilder, "ssd", this.requestData.getSsd());
         HttpGet httpGet = new HttpGet(uriBuilder.build());
-        httpGet.setHeader("x-type", "worker");
+        httpGet.setHeader("x-type", "storage");
         return httpGet;
     }
 

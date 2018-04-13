@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit;
 
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class PythonExecutor extends Thread {
-    private static final Logger log_ = LogManager.getLogger(PythonExecutor.class);
+public class ExecutorImpl extends Thread {
+    private static final Logger log_ = LogManager.getLogger(ExecutorImpl.class);
     private static final String DEFAULT_PYTHON_COMMAND = "python";
     private static final int SLEEP_TIME = 1000;
     public static int DEFAULT_QUEUE_SIZE = 100;
@@ -44,18 +44,18 @@ public class PythonExecutor extends Thread {
 
     @Setter
     @Getter
-    private String pythonCommand = DEFAULT_PYTHON_COMMAND;
+    private String command = DEFAULT_PYTHON_COMMAND;
 
     private volatile boolean stopFlag = false;
     private Postprocessor postprocessor;
 
-    public PythonExecutor(String commandPath, String codePath, List<String> args, Integer queueSize) {
+    public ExecutorImpl(String commandPath, String codePath, List<String> args, Integer queueSize) {
         this(commandPath, codePath, queueSize);
         this.args = args;
     }
 
-    public PythonExecutor(String commandPath, String codePath, Integer queueSize) {
-        this.pythonCommand = commandPath;
+    public ExecutorImpl(String commandPath, String codePath, Integer queueSize) {
+        this.command = commandPath;
         this.codePath = codePath;
         this.tasksQueue = new ArrayBlockingQueue<>(queueSize);
         this.completedTaskIDQueue = new ArrayBlockingQueue<>(queueSize);
@@ -70,9 +70,6 @@ public class PythonExecutor extends Thread {
     //TODO
     public void run() {
         log_.info("run()");
-        String result;
-        String finalResult;
-        CloudQueueMessage task;
         String taskId = "-1";
         try {
             while (!stopFlag) {
@@ -81,12 +78,9 @@ public class PythonExecutor extends Thread {
                     continue;
                 }
                 try {
-                    task = tasksQueue.poll();
+                    CloudQueueMessage task = tasksQueue.poll();
                     taskId = task.getMessageId();
-                    result = processTask(task.getMessageContentAsString());
-                    log_.trace(String.format("Task %s executed. Result: %s", taskId, result));
-                        finalResult = postprocessor.giveThisMethodName(result, task);
-                    while ((! resultQueue.offer(finalResult, 1, TimeUnit.SECONDS))           && (! stopFlag));
+                    processTask(task);
                     while ((! completedTaskIDQueue.offer(task, 1, TimeUnit.SECONDS))    && (! stopFlag));
                 } catch (IOException e) {
                     log_.error(String.format("Error while executing task %s", taskId), e);
@@ -101,14 +95,27 @@ public class PythonExecutor extends Thread {
         }
     }
 
-    public String processTask(String taskMsg) throws IOException {
-        Process p = buildProcess(taskMsg);
-        return new String(p.getInputStream().readAllBytes());
+    public void processTask(CloudQueueMessage task)
+            throws IOException, ExecutorException, InterruptedException, StorageException {
+        Process p = buildProcess(task.getMessageContentAsString());
+        Scanner scanner = new Scanner(p.getInputStream());
+        int id = 0;
+        while (scanner.hasNextLine()) {
+            String result = scanner.nextLine();
+            log_.trace(String.format("Task %s executed. Result: %s", task.getId(), result));
+            String finalResult = postprocessor.giveThisMethodName(result, task, id);
+            while ((! resultQueue.offer(finalResult, 1, TimeUnit.SECONDS)) && (! stopFlag));
+            id++;
+        }
+        String errorMessage = new String(p.getErrorStream().readAllBytes());
+        if (errorMessage.length() > 0) {
+            throw new ExecutorException(errorMessage);
+        }
     }
 
     private Process buildProcess(String task) throws IOException{
         List<String> pbArguments = new ArrayList<>();
-        pbArguments.add(pythonCommand);
+        pbArguments.add(command);
         pbArguments.add(codePath);
         pbArguments.add(task);
         pbArguments.addAll(args);

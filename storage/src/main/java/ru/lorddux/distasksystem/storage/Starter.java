@@ -1,4 +1,4 @@
-package ru.lorddux.distasksystem.worker;
+package ru.lorddux.distasksystem.storage;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.lorddux.distasksystem.worker.config.Configuration;
-import ru.lorddux.distasksystem.worker.config.ConfigurationClient;
-import ru.lorddux.distasksystem.worker.data.request.PCParametersData;
-import ru.lorddux.distasksystem.worker.http.handlers.ConfigHttpHandler;
-import ru.lorddux.distasksystem.worker.http.handlers.StartServicesHttpHandler;
-import ru.lorddux.distasksystem.worker.http.handlers.StopServicesHttpHandler;
+import ru.lorddux.distasksystem.storage.config.Configuration;
+import ru.lorddux.distasksystem.storage.config.ConfigurationClient;
+import ru.lorddux.distasksystem.storage.data.request.PCParametersData;
+import ru.lorddux.distasksystem.storage.http.handlers.ConfigHttpHandler;
+import ru.lorddux.distasksystem.storage.http.handlers.StartServicesHttpHandler;
+import ru.lorddux.distasksystem.storage.http.handlers.StopServicesHttpHandler;
 
 import java.net.InetSocketAddress;
 
@@ -29,8 +29,7 @@ public final class Starter {
         Starter starter = new Starter();
         JCommander commander = new JCommander(starter);
         commander.parse(args);
-        PCParametersData requestData = new PCParametersData();
-        ConfigurationClient configClient = new ConfigurationClient(starter.getConfigHost(), requestData);
+        ConfigurationClient configClient = new ConfigurationClient(starter.getConfigHost(), new PCParametersData());
         Thread configThread = new Thread(configClient);
         configThread.start();
         try {

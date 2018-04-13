@@ -1,17 +1,17 @@
-package ru.lorddux.distasksystem.worker.http;
+package ru.lorddux.distasksystem.storage.http;
 
 import lombok.AllArgsConstructor;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
 
 @AllArgsConstructor
 public class HttpHelperService {
@@ -38,7 +38,7 @@ public class HttpHelperService {
                     return responseData;
                 }
             } catch (IOException ex) {
-                log_.debug(String.format("sending http request problem - %s: %s", request.getURI(), ex.getMessage()));
+                log_.warn("sending http request problem - " + request.getURI(), ex);
                 exception = ex;
             }
         }

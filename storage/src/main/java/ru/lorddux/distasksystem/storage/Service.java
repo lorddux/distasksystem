@@ -1,4 +1,4 @@
-package ru.lorddux.distasksystem.worker;
+package ru.lorddux.distasksystem.storage;
 
 public interface Service {
 

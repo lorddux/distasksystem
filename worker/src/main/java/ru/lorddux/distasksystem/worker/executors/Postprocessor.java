@@ -4,5 +4,5 @@ import com.microsoft.azure.storage.queue.CloudQueueMessage;
 import ru.lorddux.distasksystem.worker.exception.ExecutorException;
 
 public interface Postprocessor {
-    String giveThisMethodName(String result, CloudQueueMessage task) throws ExecutorException;
+    String giveThisMethodName(String result, CloudQueueMessage task, int id) throws ExecutorException;
 }
