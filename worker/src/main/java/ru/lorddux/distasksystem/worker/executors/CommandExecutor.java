@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-public class CommandExecutor extends ExecutorImpl {
+public class CommandExecutor extends Executor {
     private static final Logger log_ = LogManager.getLogger(CommandExecutor.class);
 
     @Getter

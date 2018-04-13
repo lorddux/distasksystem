@@ -2,7 +2,7 @@ package ru.lorddux.distasksystem.worker.connector;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.lorddux.distasksystem.worker.executors.ExecutorImpl;
+import ru.lorddux.distasksystem.worker.executors.Executor;
 import ru.lorddux.distasksystem.worker.transport.TransportManager;
 import ru.lorddux.distasksystem.worker.utils.ExecutorQueuePool;
 import ru.lorddux.distasksystem.worker.utils.QueuePool;
@@ -16,9 +16,9 @@ public class StorageLayerConnectorImpl implements StorageLayerConnector, Runnabl
     private TransportManager transportManager;
     private QueuePool<String> resultQueuePool;
     private volatile boolean stop = false;
-    public StorageLayerConnectorImpl(Collection<ExecutorImpl> executors, TransportManager transportManager) {
+    public StorageLayerConnectorImpl(Collection<Executor> executors, TransportManager transportManager) {
         this.transportManager = transportManager;
-        this.resultQueuePool = new ExecutorQueuePool<>(executors, ExecutorImpl::getResultQueue);
+        this.resultQueuePool = new ExecutorQueuePool<>(executors, Executor::getResultQueue);
     }
 
     public void stop() {

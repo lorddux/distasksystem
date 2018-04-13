@@ -1,19 +1,13 @@
 package ru.lorddux.distasksystem.worker.executors;
 
-import com.microsoft.azure.storage.StorageException;
-import com.microsoft.azure.storage.queue.CloudQueueMessage;
 import lombok.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.lorddux.distasksystem.worker.exception.ExecutorException;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
-public class PythonExecutor extends ExecutorImpl {
+public class PythonExecutor extends Executor {
     private static final Logger log_ = LogManager.getLogger(PythonExecutor.class);
 
     @Setter

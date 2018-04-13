@@ -13,8 +13,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public abstract class ExecutorImpl extends Thread {
-    private static final Logger log_ = LogManager.getLogger(ExecutorImpl.class);
+public abstract class Executor extends Thread {
+    private static final Logger log_ = LogManager.getLogger(Executor.class);
     private static final int SLEEP_TIME = 1000;
     public static int DEFAULT_QUEUE_SIZE = 100;
 
@@ -30,7 +30,7 @@ public abstract class ExecutorImpl extends Thread {
     private volatile boolean stopFlag = false;
     private Postprocessor postprocessor;
 
-    public ExecutorImpl(Integer queueSize) {
+    public Executor(Integer queueSize) {
         this.tasksQueue = new ArrayBlockingQueue<>(queueSize);
         this.completedTaskIDQueue = new ArrayBlockingQueue<>(queueSize);
         this.resultQueue = new ArrayBlockingQueue<>(queueSize);

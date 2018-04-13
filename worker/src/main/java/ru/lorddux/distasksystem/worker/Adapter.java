@@ -8,7 +8,7 @@ import ru.lorddux.distasksystem.worker.config.Configuration;
 import ru.lorddux.distasksystem.worker.connector.StorageLayerConnector;
 import ru.lorddux.distasksystem.worker.connector.StorageLayerConnectorImpl;
 import ru.lorddux.distasksystem.worker.executors.CommandExecutor;
-import ru.lorddux.distasksystem.worker.executors.ExecutorImpl;
+import ru.lorddux.distasksystem.worker.executors.Executor;
 import ru.lorddux.distasksystem.worker.executors.PythonExecutor;
 import ru.lorddux.distasksystem.worker.queue.DeleteQueueMessagesClient;
 import ru.lorddux.distasksystem.worker.queue.GetQueueMessagesClient;
@@ -35,7 +35,7 @@ public class Adapter implements Service {
     private static Logger log_ = LogManager.getLogger(Adapter.class);
     private static final String DEFAULT_SUBDIRECTORY = "var";
 
-    private Collection<ExecutorImpl> executors;
+    private Collection<Executor> executors;
     private GetQueueMessagesClient getMessagesClient;
     private DeleteQueueMessagesClient deleteMessagesClient;
     private StorageLayerConnector storageLayerConnector;
@@ -82,7 +82,7 @@ public class Adapter implements Service {
     synchronized public void stop() {
         log_.info("Stopping services");
         getMessagesClient.stop();
-        executors.parallelStream().forEach(ExecutorImpl::stopThread);
+        executors.parallelStream().forEach(Executor::stopThread);
         deleteMessagesClient.stop();
         storageLayerConnector.stop();
 
@@ -104,12 +104,12 @@ public class Adapter implements Service {
                 executors.add(new PythonExecutor(
                         configuration.getCodeConfig().getCommand(),
                         DEFAULT_SUBDIRECTORY + "/" + configuration.getCodeConfig().getMainFile(),
-                        ExecutorImpl.DEFAULT_QUEUE_SIZE
+                        Executor.DEFAULT_QUEUE_SIZE
                 ));
             } else {
                 executors.add(new CommandExecutor(
                         configuration.getCodeConfig().getCommand(),
-                        ExecutorImpl.DEFAULT_QUEUE_SIZE
+                        Executor.DEFAULT_QUEUE_SIZE
                 ));
             }
         }

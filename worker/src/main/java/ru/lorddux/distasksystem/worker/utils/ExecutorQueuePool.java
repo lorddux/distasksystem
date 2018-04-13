@@ -1,7 +1,7 @@
 package ru.lorddux.distasksystem.worker.utils;
 
 import com.google.common.collect.Iterators;
-import ru.lorddux.distasksystem.worker.executors.ExecutorImpl;
+import ru.lorddux.distasksystem.worker.executors.Executor;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -14,7 +14,7 @@ public class ExecutorQueuePool<T> implements QueuePool<T>{
     private Iterator<BlockingQueue<T>> queuePool;
     private int queueNum;
 
-    public ExecutorQueuePool(Collection<ExecutorImpl> queueHolders, Function<ExecutorImpl, BlockingQueue<T>> getQueueFunction) {
+    public ExecutorQueuePool(Collection<Executor> queueHolders, Function<Executor, BlockingQueue<T>> getQueueFunction) {
         queueNum = queueHolders.size();
         queuePool = Iterators.cycle(
                 queueHolders.stream().map(getQueueFunction::apply).collect(Collectors.toList())

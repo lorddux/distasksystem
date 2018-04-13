@@ -4,7 +4,7 @@ import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.queue.CloudQueueMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.lorddux.distasksystem.worker.executors.ExecutorImpl;
+import ru.lorddux.distasksystem.worker.executors.Executor;
 import ru.lorddux.distasksystem.worker.utils.ExecutorQueuePool;
 
 import java.util.Collection;
@@ -17,8 +17,8 @@ public class GetQueueMessagesClient implements Runnable {
     private QueueProcessor queueProcessor;
     private volatile boolean stopFlag = false;
 
-    public GetQueueMessagesClient(Collection<ExecutorImpl> executors, QueueProcessor queueProcessor) {
-        this.executorsQueuePool = new ExecutorQueuePool<>(executors, ExecutorImpl::getTasksQueue);
+    public GetQueueMessagesClient(Collection<Executor> executors, QueueProcessor queueProcessor) {
+        this.executorsQueuePool = new ExecutorQueuePool<>(executors, Executor::getTasksQueue);
         this.queueProcessor = queueProcessor;
     }
 
