@@ -12,13 +12,12 @@ import java.util.List;
 public class Configuration {
     private static volatile Configuration instance;
 
-    private StorageLayerConfig storageLayerConfig;
     private Integer listenPort;
     private DriverConfig driverConfig;
-    private DBConfig queueConfig;
-    private List<String> jvmParameters;
     private Integer workerCapacity;
     private String authorization;
+    private DBConfig dbConfig;
+    private String sqlStatement;
 
     public static Configuration getInstance() {
         Configuration localInstance = instance;
@@ -50,16 +49,7 @@ public class Configuration {
     public static class DBConfig {
         private String connectionUrl;
         private String connectionPassword;
-        private String tableName;
         private String userName;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class StorageLayerConfig {
-        private String address;
-        private Integer port;
     }
 
 }

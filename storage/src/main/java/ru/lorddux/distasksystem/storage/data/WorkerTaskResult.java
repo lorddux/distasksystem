@@ -8,5 +8,5 @@ public class WorkerTaskResult {
     private String taskSentence;
     private int resultNumber;
     private String result;
-    private long timestamp;
+    private int timestamp;
 }

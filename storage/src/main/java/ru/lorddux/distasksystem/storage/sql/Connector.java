@@ -13,6 +13,9 @@ public class Connector {
 
     private Connection connection;
     private PreparedStatement preparedStatement;
+    private String url;
+    private String user;
+    private String password;
 
     public static Connector getInstance() {
         Connector localInstance = instance;
@@ -35,17 +38,48 @@ public class Connector {
     }
 
     public void connect(String url, String user, String password) throws SQLException {
-        log_.info("Connecting to " + url);
+        log_.info("Connect to " + url);
+        this.user = user;
+        this.url = url;
+        this.password = password;
+        connect();
+    }
+
+    private void connect() throws SQLException {
         connection = DriverManager.getConnection(url, user, password);
+    }
+
+    public void reconnect() throws SQLException {
+        log_.info("Reconnect to " + url);
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            log_.debug("Can not close connection: " + e.getMessage());
+        } finally {
+            connect();
+        }
+    }
+
+    public boolean isClosed() {
+        try {
+            return connection.isClosed();
+        } catch (SQLException e) {
+            return true;
+        }
     }
 
     public void prepareStatement(String sqlStatement) throws SQLException {
         preparedStatement = connection.prepareStatement(sqlStatement);
     }
 
-    public void setParameters(WorkerTaskResult result) throws SQLException {
+    public synchronized void setParameters(WorkerTaskResult result) throws SQLException {
         log_.debug(String.format("Set a new raw with parameters %s", result.toString()));
         preparedStatement.setString(1, result.getTaskId());
+        preparedStatement.setString(2, result.getTaskSentence());
+        preparedStatement.setInt(3, result.getResultNumber());
+        preparedStatement.setInt(4, result.getTimestamp());
+        preparedStatement.setString(5, result.getResult());
+        preparedStatement.addBatch();
     }
 
     public void executeBatch() throws SQLException {
