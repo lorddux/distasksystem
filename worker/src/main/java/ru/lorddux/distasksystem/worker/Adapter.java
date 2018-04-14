@@ -52,7 +52,6 @@ public class Adapter implements Service {
             init();
         } catch (Exception e) {
             log_.fatal("Can not init services", e);
-            System.exit(1);
             return;
         }
 

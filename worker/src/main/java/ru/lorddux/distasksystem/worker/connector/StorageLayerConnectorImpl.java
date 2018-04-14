@@ -32,7 +32,6 @@ public class StorageLayerConnectorImpl implements StorageLayerConnector, Runnabl
             transportManager.openConnection(-1);
         } catch (IOException e) {
             log_.fatal("Could not open connection. Exiting", e);
-            System.exit(1);
             return;
         }
         while (!stop) {

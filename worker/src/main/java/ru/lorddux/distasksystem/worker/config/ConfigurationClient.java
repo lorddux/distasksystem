@@ -41,8 +41,7 @@ public class ConfigurationClient implements Runnable {
             request = requestService.createRequest(requestData);
         } catch (URISyntaxException e) {
             log_.fatal("Can not get configuration. Exiting", e);
-            System.exit(1);
-            return;
+            throw new RuntimeException();
         }
 
         log_.info(String.format("Constructed request - %s", request));
