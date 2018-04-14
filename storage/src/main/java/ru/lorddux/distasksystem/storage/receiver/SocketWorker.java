@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import ru.lorddux.distasksystem.Stopable;
 import ru.lorddux.distasksystem.storage.data.WorkerTaskResult;
 import ru.lorddux.distasksystem.storage.receiver.processors.SentenceProcessor;
+import ru.lorddux.distasksystem.utils.DynamicQueuePool;
 import ru.lorddux.distasksystem.utils.QueuePool;
 
 import java.io.BufferedReader;
@@ -16,6 +17,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.concurrent.ArrayBlockingQueue;
 
 @RequiredArgsConstructor
 public class SocketWorker implements Stopable {
@@ -29,10 +31,11 @@ public class SocketWorker implements Stopable {
     @NonNull
     private SentenceProcessor processor;
 
-    @NonNull
-    private QueuePool<WorkerTaskResult> destinationPool;
+//    @NonNull
+//    private DynamicQueuePool<WorkerTaskResult> destinationPool;
 
     private volatile boolean stopFlag = false;
+    private ArrayBlockingQueue<WorkerTaskResult> destination;
 
     @Override
     public void stop() {
@@ -98,6 +101,12 @@ public class SocketWorker implements Stopable {
 
     private void dispatch(String sentence) {
         WorkerTaskResult result = processor.decode(sentence);
-        destinationPool.add(result, 1000L);
+        while (! destination.offer(result)) {
+            try {
+                Thread.sleep(100L);
+            } catch (InterruptedException e) {
+                log_.info("Thread was interrupted. Exiting");
+            }
+        }
     }
 }

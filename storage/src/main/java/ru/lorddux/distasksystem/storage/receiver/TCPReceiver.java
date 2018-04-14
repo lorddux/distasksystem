@@ -5,6 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.lorddux.distasksystem.Stopable;
+import ru.lorddux.distasksystem.storage.data.WorkerTaskResult;
+import ru.lorddux.distasksystem.storage.receiver.processors.SentenceProcessor;
+import ru.lorddux.distasksystem.storage.sql.StatementProcessor;
+import ru.lorddux.distasksystem.utils.QueuePool;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -22,6 +26,12 @@ public class TCPReceiver implements Stopable {
     @NonNull
     private Integer port;
 
+    @NonNull
+    private SentenceProcessor processor;
+
+    @NonNull
+    private QueuePool<WorkerTaskResult> pool;
+
     @Override
     public void stop() {
         stopFlag = true;
@@ -38,6 +48,11 @@ public class TCPReceiver implements Stopable {
         while (! stopFlag) {
             try {
                 Socket connectionSocket = socket.accept();
+
+                new Thread(
+                        new SocketWorker(connectionSocket, processor, pool)
+                ).start();
+
                 log_.info("Client connected from " + connectionSocket.getInetAddress());
             } catch (SocketTimeoutException ex) {
                 log_.debug("Socket timeout: " + ex.getMessage());
