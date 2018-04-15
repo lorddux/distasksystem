@@ -14,11 +14,13 @@ import ru.lorddux.distasksystem.utils.ListDynamicQueuePool;
 import ru.lorddux.distasksystem.utils.download.Downloader;
 import ru.lorddux.distasksystem.utils.download.DownloaderImpl;
 
+import java.io.File;
 import java.sql.Driver;
 
 public class Adapter implements Service {
     private static final Logger log_ = LogManager.getLogger(Adapter.class);
     private static final String DRIVER_PATH = "var/driver.jar";
+    private static final String SUBFOLDER = "var";
     private static final int BATCH_SIZE = 5000;
     private boolean runningFlag = false;
     private TCPReceiver receiver;
@@ -57,6 +59,10 @@ public class Adapter implements Service {
         DynamicQueuePool<WorkerTaskResult> pool = new ListDynamicQueuePool<>();
         receiver = new TCPReceiver(configuration.getListenPort(), new JsonSentenceProcessor(), pool);
 
+        File f = new File(SUBFOLDER);
+        if (! f.exists()) {
+            f.mkdirs();
+        }
         Downloader downloader = new DownloaderImpl();
         downloader.download(configuration.getDriverConfig().getDriverAddress(), DRIVER_PATH);
         Driver driver = JDBCLoader.loadDriver(DRIVER_PATH, configuration.getDriverConfig().getDriverClass());
