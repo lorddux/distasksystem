@@ -1,5 +1,6 @@
 package ru.lorddux.distasksystem.storage.receiver;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.Level;
@@ -18,12 +19,14 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 @RequiredArgsConstructor
 public class SocketWorker implements Stopable {
     private static final Logger log_ = LogManager.getLogger(SocketWorker.class);
-    private static int SO_TIMEOUT = 5000;
-    private static int DISCONNECT_TIMEOUT_MILLIS = 10 * 60 * 1000; // 10 minutes
+    private static final int SO_TIMEOUT = 5000;
+    private static final int DISCONNECT_TIMEOUT_MILLIS = 10 * 60 * 1000; // 10 minutes
+    private static final int QUEUE_SIZE = 1000;
 
     @NonNull
     private Socket clientSocket;
@@ -31,11 +34,10 @@ public class SocketWorker implements Stopable {
     @NonNull
     private SentenceProcessor processor;
 
-//    @NonNull
-//    private DynamicQueuePool<WorkerTaskResult> destinationPool;
+    @Getter
+    private BlockingQueue<WorkerTaskResult> destination = new ArrayBlockingQueue<>(QUEUE_SIZE);
 
     private volatile boolean stopFlag = false;
-    private ArrayBlockingQueue<WorkerTaskResult> destination;
 
     @Override
     public void stop() {
@@ -88,7 +90,7 @@ public class SocketWorker implements Stopable {
     }
 
     private void closeConnection() {
-        log_.info(String.format("Closing sql from %s", clientSocket.getInetAddress()));
+        log_.info(String.format("Closing connection from %s", clientSocket.getInetAddress()));
         try {
             clientSocket.shutdownInput();
             clientSocket.shutdownOutput();

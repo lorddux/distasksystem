@@ -7,6 +7,6 @@ public class WorkerTaskResult {
     private String taskId;
     private String taskSentence;
     private int resultNumber;
-    private String result;
     private int timestamp;
+    private String result;
 }

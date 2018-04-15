@@ -1,5 +1,6 @@
 package ru.lorddux.distasksystem.storage.config;
 
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,6 @@ public class Configuration {
 
     private Integer listenPort;
     private DriverConfig driverConfig;
-    private Integer workerCapacity;
     private String authorization;
     private DBConfig dbConfig;
     private String sqlStatement;
@@ -48,8 +48,12 @@ public class Configuration {
     @AllArgsConstructor
     public static class DBConfig {
         private String connectionUrl;
-        private String connectionPassword;
         private String userName;
+        private String connectionPassword;
     }
 
+    public static void main(String[] args) {
+        Configuration c = new Configuration(1515, new DriverConfig("https://github.com/lorddux/testDriver/raw/master/mysql-connector-java-5.1.46.jar", "com.mysql.jdbc.Driver"), "kek", new DBConfig("jdbc:mysql://localhost/test", "root", ""), "INSERT into test (id, taskId, sentence, resNum, timestamp, result) VALUES\" + \"(?,?,?,?,?,?)");
+        System.out.println(new Gson().toJson(c));
+    }
 }

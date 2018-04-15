@@ -32,6 +32,10 @@ public class Connector {
         return instance;
     }
 
+    public void close() throws SQLException {
+        connection.close();
+    }
+
     private Connector(Driver driver) throws SQLException {
         log_.info("Register jdbc driver");
         DriverManager.registerDriver(new DriverShim(driver));
@@ -47,6 +51,7 @@ public class Connector {
 
     private void connect() throws SQLException {
         connection = DriverManager.getConnection(url, user, password);
+        log_.info("Connected to " + url);
     }
 
     public void reconnect() throws SQLException {
@@ -74,11 +79,12 @@ public class Connector {
 
     public synchronized void setParameters(WorkerTaskResult result) throws SQLException {
         log_.debug(String.format("Set a new raw with parameters %s", result.toString()));
-        preparedStatement.setString(1, result.getTaskId());
-        preparedStatement.setString(2, result.getTaskSentence());
-        preparedStatement.setInt(3, result.getResultNumber());
-        preparedStatement.setInt(4, result.getTimestamp());
-        preparedStatement.setString(5, result.getResult());
+        preparedStatement.setString(1, result.getTaskId()+result.getResultNumber());
+        preparedStatement.setString(2, result.getTaskId());
+        preparedStatement.setString(3, result.getTaskSentence());
+        preparedStatement.setInt(4, result.getResultNumber());
+        preparedStatement.setInt(5, result.getTimestamp());
+        preparedStatement.setString(6, result.getResult());
         preparedStatement.addBatch();
     }
 

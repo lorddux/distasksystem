@@ -17,7 +17,6 @@ public class DownloaderImpl implements Downloader {
     private final static Logger log_ = LogManager.getLogger(Downloader.class);
 
     public void download(String urlString, String dstFilePath) throws DownloadException {
-
         try (OutputStream output = new FileOutputStream(new File(dstFilePath))) {
             URL url = new URL(urlString);
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -46,5 +45,10 @@ public class DownloaderImpl implements Downloader {
             if (hv.contains(" 301 ") || hv.contains(" 302 ")) return true;
         }
         return false;
+    }
+
+    public static void main(String[] args) throws Exception {
+        Downloader d = new DownloaderImpl();
+        d.download("https://github.com/lorddux/testDriver/raw/master/mysql-connector-java-5.1.46.jar", "driver.jar");
     }
 }
