@@ -9,6 +9,7 @@
 *.ear
 var/
 log/
+lib/
 # virtual machine crash logs, see ru.hse.lorddux.http://www.java.com/en/ru.hse.lorddux.utils.download/help/error_hotspot.xml
 hs_err_pid*
 
