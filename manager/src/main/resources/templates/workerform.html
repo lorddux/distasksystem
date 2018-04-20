@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Worker form</title>
+</head>
+<body>
+<form action="#" th:action="@{/setworker}" th:object="${workerConfig}" method="post">
+    <table>
+        <tr>
+            <td>Code address:</td>
+            <td><input type="text" th:field="*{codeAddress}" /></td>
+            <!--<td th:if="${#fields.hasErrors('codeAddress')}" th:errors="*{codeAddress}">dddddfdfdf</td>-->
+        </tr>
+        <tr>
+            <td>Code main file:</td>
+            <td><input type="text" th:field="*{codeMainFile}" /></td>
+        </tr>
+        <tr>
+            <td>Code command:</td>
+            <td><input type="text" th:field="*{codeCommand}" /></td>
+        </tr>
+        <tr>
+            <td>Storage address:</td>
+            <td><input type="text" th:field="*{storageAddress}" /></td>
+        </tr>
+        <tr>
+            <td>Storage port:</td>
+            <td><input type="text" th:field="*{storagePort}" /></td>
+        </tr>
+        <tr>
+            <td>Queue connection:</td>
+            <td><input type="text" th:field="*{queueConnectionString}" /></td>
+        </tr>
+        <tr>
+            <td>Queue name:</td>
+            <td><input type="text" th:field="*{queueName}" /></td>
+        </tr>
+        <tr>
+            <td><button type="submit">Submit</button></td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

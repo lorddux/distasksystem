@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:form="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Storage config</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<p th:text="'Driver address: ' + ${driverAddress}" />
+<p th:text="'Driver main class: ' + ${driverClass}" />
+<p th:text="'Connection url: ' + ${connectionUrl}" />
+<p th:text="'Connection username: ' + ${connectionUserName}" />
+<p th:text="'Connection password: ' + ${connectionPassword}" />
+<p th:text="'Statement: ' + ${sqlStatement}" />
+</body>
+</html>

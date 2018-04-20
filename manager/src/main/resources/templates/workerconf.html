@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:form="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Worker config</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<p th:text="'Code address: ' + ${codeAddress}" />
+<p th:text="'Code main file: ' + ${codeMainFile}" />
+<p th:text="'Code command: ' + ${codeCommand}" />
+<p th:text="'Storage address: ' + ${storageAddress}" />
+<p th:text="'Storage port: ' + ${storagePort}" />
+<p th:text="'Queue connection: ' + ${queueConnectionString}" />
+<p th:text="'Queue name: ' + ${queueName}" />
+
+</body>
+</html>

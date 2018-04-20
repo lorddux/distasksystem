@@ -32,6 +32,7 @@ import java.rmi.server.UID;
 public class ApiController implements WebMvcConfigurer {
     private static final String EMPTY_CONFIG = "-";
     private static final Integer DEFAULT_STORAGE_PORT = 1515;
+    private static final Integer DEFAULT_CAPACITY = 10;
 
     @Autowired
     private WorkerRepository workerRepository;
@@ -87,7 +88,6 @@ public class ApiController implements WebMvcConfigurer {
         } else {
             return EMPTY_CONFIG;
         }
-
         storage.setConfig(config);
         storageLayerRepository.save(storage);
         return new StorageConfigStructure(
@@ -107,6 +107,7 @@ public class ApiController implements WebMvcConfigurer {
         if ((worker = workerRepository.findByAddress(address)) == null) {
             worker = new Worker();
             worker.setAuthorization(new UID().toString());
+            worker.setCapacity(DEFAULT_CAPACITY);
             worker.setAddress(address);
         }
         worker.setState(State.STOP);
@@ -117,7 +118,6 @@ public class ApiController implements WebMvcConfigurer {
         } else {
             return EMPTY_CONFIG;
         }
-
         worker.setConfig(config);
         workerRepository.save(worker);
         return new WorkerConfigStructure(
