@@ -99,15 +99,15 @@ public class Adapter implements Service {
 
         log_.info("Initializing executors");
         for (int i = 0; i < configuration.getWorkerCapacity(); i++) {
-            if (configuration.getCodeConfig().getMainFile() != null) {
+            if (configuration.getCodeMainFile() != null) {
                 executors.add(new PythonExecutor(
-                        configuration.getCodeConfig().getCommand(),
-                        DEFAULT_SUBDIRECTORY + "/" + configuration.getCodeConfig().getMainFile(),
+                        configuration.getCodeCommand(),
+                        DEFAULT_SUBDIRECTORY + "/" + configuration.getCodeMainFile(),
                         Executor.DEFAULT_QUEUE_SIZE
                 ));
             } else {
                 executors.add(new CommandExecutor(
-                        configuration.getCodeConfig().getCommand(),
+                        configuration.getCodeCommand(),
                         Executor.DEFAULT_QUEUE_SIZE
                 ));
             }
@@ -115,8 +115,8 @@ public class Adapter implements Service {
 
         log_.info("Creating queue processor");
         QueueProcessor queueProcessor = new QueueProcessorImpl(
-                configuration.getQueueConfig().getStorageConnectionString(),
-                configuration.getQueueConfig().getQueueName()
+                configuration.getQueueConnectionString(),
+                configuration.getQueueName()
         );
 
         log_.info("Creating GetQueueMessagesClient");
@@ -128,8 +128,8 @@ public class Adapter implements Service {
         log_.info("Creating StorageLayerConnector");
         storageLayerConnector = new StorageLayerConnectorImpl(executors, new TransportManager(
                 new TCPTransport(
-                        configuration.getStorageLayerConfig().getAddress(),
-                        configuration.getStorageLayerConfig().getPort()
+                        configuration.getStorageAddress(),
+                        configuration.getStoragePort()
                 )
         ));
 
@@ -141,8 +141,8 @@ public class Adapter implements Service {
         }
 
         downloader = new GitDownloader();
-        log_.info(String.format("Downloading code from %s", configuration.getCodeConfig().getAddress()));
-        downloader.download(configuration.getCodeConfig().getAddress(), DEFAULT_SUBDIRECTORY);
+        log_.info(String.format("Downloading code from %s", configuration.getCodeAddress()));
+        downloader.download(configuration.getCodeAddress(), DEFAULT_SUBDIRECTORY);
 
         log_.info("Installing requirements");
         try {

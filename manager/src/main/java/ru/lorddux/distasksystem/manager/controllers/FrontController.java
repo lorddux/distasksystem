@@ -8,7 +8,7 @@ import ru.lorddux.distasksystem.manager.db.repositories.*;
 
 
 @Controller
-public class GreetingController implements WebMvcConfigurer {
+public class FrontController implements WebMvcConfigurer {
     @Autowired
     private StorageConfigRepository storageConfigRepository;
     @Autowired

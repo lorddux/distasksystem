@@ -64,14 +64,14 @@ public class Adapter implements Service {
             f.mkdirs();
         }
         Downloader downloader = new DownloaderImpl();
-        downloader.download(configuration.getDriverConfig().getDriverAddress(), DRIVER_PATH);
-        Driver driver = JDBCLoader.loadDriver(DRIVER_PATH, configuration.getDriverConfig().getDriverClass());
+        downloader.download(configuration.getDriverAddress(), DRIVER_PATH);
+        Driver driver = JDBCLoader.loadDriver(DRIVER_PATH, configuration.getDriverClass());
 
         Connector connector = Connector.createInstance(driver);
         connector.connect(
-                configuration.getDbConfig().getConnectionUrl(),
-                configuration.getDbConfig().getUserName(),
-                configuration.getDbConfig().getConnectionPassword()
+                configuration.getConnectionUrl(),
+                configuration.getConnectionUserName(),
+                configuration.getConnectionPassword()
         );
         connector.prepareStatement(configuration.getSqlStatement());
         connectionWorker = new ConnectionWorker(pool, BATCH_SIZE, connector);

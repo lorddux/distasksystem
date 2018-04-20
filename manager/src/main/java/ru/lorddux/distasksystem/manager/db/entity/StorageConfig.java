@@ -15,7 +15,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class StorageConfig implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @NotNull

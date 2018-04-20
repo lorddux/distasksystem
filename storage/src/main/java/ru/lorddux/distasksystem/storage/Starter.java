@@ -25,11 +25,16 @@ public final class Starter {
     @Parameter(names={"-h", "--host"}, required = true)
     private String configHost;
 
+    @Getter
+    @Setter
+    @Parameter(names={"-p", "--port"})
+    private Integer port;
+
     public static void main(String[] args) throws Exception {
         Starter starter = new Starter();
         JCommander commander = new JCommander(starter);
         commander.parse(args);
-        ConfigurationClient configClient = new ConfigurationClient(starter.getConfigHost(), new PCParametersData());
+        ConfigurationClient configClient = new ConfigurationClient(starter.getConfigHost(), starter.getPort());
         Thread configThread = new Thread(configClient);
         configThread.start();
         try {

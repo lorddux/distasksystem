@@ -10,13 +10,21 @@ import java.util.List;
 public class Configuration {
     private static volatile Configuration instance;
 
-    private StorageLayerConfig storageLayerConfig;
-    private CodeConfig codeConfig;
-    private QueueConfig queueConfig;
-    private List<String> jvmParameters;
-    private WorkerType type;
-    private Integer workerCapacity;
+    private String codeAddress;
+    private String codeMainFile;
+    private String codeCommand;
+    private String storageAddress;
+    private Integer storagePort;
+    private String queueConnectionString;
+    private String queueName;
+    private WorkerType workerType;
     private String authorization;
+    private Integer workerCapacity;
+
+    public enum WorkerType {
+        EXECUTOR,
+        GENERATOR
+    }
 
     public static Configuration getInstance() {
         Configuration localInstance = instance;
@@ -32,35 +40,5 @@ public class Configuration {
         synchronized (Configuration.class) {
             instance = newInstance;
         }
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CodeConfig {
-        private String address;
-        private String mainFile;
-        private String command;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class QueueConfig {
-        private String storageConnectionString;
-        private String queueName;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class StorageLayerConfig {
-        private String address;
-        private Integer port;
-    }
-
-    public enum WorkerType {
-        EXECUTOR,
-        GENERATOR
     }
 }

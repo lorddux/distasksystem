@@ -9,6 +9,7 @@ public class JsonSentenceProcessor implements SentenceProcessor {
     public JsonSentenceProcessor() {
         gson = new Gson();
     }
+
     @Override
     public WorkerTaskResult decode(String sentence) {
         return gson.fromJson(sentence, WorkerTaskResult.class);
