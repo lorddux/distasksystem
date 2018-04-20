@@ -1,21 +1,21 @@
 package ru.lorddux.distasksystem.manager.db.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
 @Table(name="storage_configs")
 @NoArgsConstructor
 @AllArgsConstructor
-public class StorageConfig {
+public class StorageConfig implements Serializable {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @NotNull
@@ -33,4 +33,12 @@ public class StorageConfig {
 
     @NotNull
     private String sqlStatement;
+
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "config", cascade = CascadeType.ALL)
+    private final Set<StorageLayer> storageLayers = new HashSet<>();
+
+    public void addStorage(StorageLayer storageLayer) {
+        storageLayers.add(storageLayer);
+    }
 }

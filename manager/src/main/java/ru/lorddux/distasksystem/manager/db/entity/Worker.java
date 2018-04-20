@@ -3,20 +3,34 @@ package ru.lorddux.distasksystem.manager.db.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.lorddux.distasksystem.manager.db.State;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @Entity
 @Table(name = "workers")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Worker {
+public class Worker implements Serializable {
     @Id
-    private String workerAddress;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    private String address;
+
     private String authorization;
-    private Integer configId;
-    private Integer workerCapacity;
+
+    @ManyToOne
+    @JoinColumn(name = "config")
+    private WorkerConfig config;
+
+    private Integer capacity;
+
+    @Enumerated(EnumType.STRING)
+    private State state;
+
+    private Integer totalStat = 0;
+
 }
