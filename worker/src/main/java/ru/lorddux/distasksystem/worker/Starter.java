@@ -12,6 +12,7 @@ import ru.lorddux.distasksystem.worker.config.ConfigurationClient;
 import ru.lorddux.distasksystem.worker.data.request.PCParametersData;
 import ru.lorddux.distasksystem.worker.http.handlers.ConfigHttpHandler;
 import ru.lorddux.distasksystem.worker.http.handlers.StartServicesHttpHandler;
+import ru.lorddux.distasksystem.worker.http.handlers.StatisticHttpHandler;
 import ru.lorddux.distasksystem.worker.http.handlers.StopServicesHttpHandler;
 
 import java.net.InetSocketAddress;
@@ -65,6 +66,9 @@ public final class Starter {
         );
         server.createContext("/config",
                 new ConfigHttpHandler(Configuration.getInstance().getAuthorization())
+        );
+        server.createContext("/stat",
+                new StatisticHttpHandler(Configuration.getInstance().getAuthorization())
         );
         server.start();
     }
