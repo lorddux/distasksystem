@@ -19,8 +19,9 @@ import java.net.URISyntaxException;
 @RequiredArgsConstructor
 public class ConfigurationClient implements Runnable {
     private static final Logger log_ = LogManager.getLogger(ConfigurationClient.class);
-    private static long DEFAULT_SLEEP_TIME = 3000L;
-    private static final String configPath = "/config";
+    private static final long DEFAULT_SLEEP_TIME = 3000L;
+    private static final String CONFIG_PATH = "/api/config";
+    private static final String EMPTY_CONFIG = "-";
     @NonNull private String configServerHost;
     @NonNull private PCParametersData requestData;
 
@@ -35,14 +36,13 @@ public class ConfigurationClient implements Runnable {
 
     @Override
     public void run() {
-        RequestCreator<PCParametersData> requestService = new ConfigurationRequestCreator(requestData, configServerHost, configPath);
+        RequestCreator<PCParametersData> requestService = new ConfigurationRequestCreator(requestData, configServerHost, CONFIG_PATH);
         HttpUriRequest request;
         try {
             request = requestService.createRequest(requestData);
         } catch (URISyntaxException e) {
             log_.fatal("Can not get configuration. Exiting", e);
-            System.exit(1);
-            return;
+            throw new RuntimeException();
         }
 
         log_.info(String.format("Constructed request - %s", request));
@@ -53,6 +53,15 @@ public class ConfigurationClient implements Runnable {
             try {
                 attemptsCount++;
                 String configRaw = HttpHelperService.getInstance().sendRequest(request);
+                if (configRaw.equals(EMPTY_CONFIG)) {
+                    log_.debug(String.format("Empty configuration was obtained. Retrying #%d...", attemptsCount));
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException ex) {
+                        return;
+                    }
+                    continue;
+                }
                 log_.debug(String.format("Configuration raw: %s", configRaw));
                 Configuration configuration = gson.fromJson(configRaw, Configuration.class);
                 Configuration.setInstance(configuration);
@@ -64,7 +73,7 @@ public class ConfigurationClient implements Runnable {
                 try {
                     Thread.sleep(sleepTime);
                 } catch (InterruptedException ex) {
-                    return;
+                    throw new RuntimeException("Can not get configuration: thread was interrupted");
                 }
             }
         }

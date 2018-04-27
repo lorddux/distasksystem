@@ -19,6 +19,13 @@ public interface QueuePool<T> {
     int drainNextTo(Collection<T> collection);
 
     /**
+     * drains size items from queue pool to given collection
+     * @param collection - destination
+     * @param size - number of elements to drain
+     * @return actual number of elements drained to collection
+     */
+    int drainTo(Collection<T> collection, int size);
+    /**
      * adds an item to one of queue of this queuePool
      * @param item - item to add
      */

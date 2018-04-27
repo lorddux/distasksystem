@@ -2,7 +2,7 @@ package ru.lorddux.distasksystem.worker.connector;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.lorddux.distasksystem.worker.executors.ExecutorImpl;
+import ru.lorddux.distasksystem.worker.executors.Executor;
 import ru.lorddux.distasksystem.worker.transport.TransportManager;
 import ru.lorddux.distasksystem.worker.utils.ExecutorQueuePool;
 import ru.lorddux.distasksystem.worker.utils.QueuePool;
@@ -16,9 +16,11 @@ public class StorageLayerConnectorImpl implements StorageLayerConnector, Runnabl
     private TransportManager transportManager;
     private QueuePool<String> resultQueuePool;
     private volatile boolean stop = false;
-    public StorageLayerConnectorImpl(Collection<ExecutorImpl> executors, TransportManager transportManager) {
+    private volatile long stat = 0;
+
+    public StorageLayerConnectorImpl(Collection<Executor> executors, TransportManager transportManager) {
         this.transportManager = transportManager;
-        this.resultQueuePool = new ExecutorQueuePool<>(executors, ExecutorImpl::getResultQueue);
+        this.resultQueuePool = new ExecutorQueuePool<>(executors, Executor::getResultQueue);
     }
 
     public void stop() {
@@ -27,12 +29,16 @@ public class StorageLayerConnectorImpl implements StorageLayerConnector, Runnabl
     }
 
     @Override
+    public long getStat() {
+        return stat;
+    }
+
+    @Override
     public void run() {
         try {
             transportManager.openConnection(-1);
         } catch (IOException e) {
             log_.fatal("Could not open connection. Exiting", e);
-            System.exit(1);
             return;
         }
         while (!stop) {
@@ -45,6 +51,7 @@ public class StorageLayerConnectorImpl implements StorageLayerConnector, Runnabl
                 try {
                     transportManager.sendMessageLine(result);
                     sent = true;
+                    stat += 1;
                 } catch (IOException e) {
                     log_.warn(String.format("Can not send result. Retrying #%s", tries), e);
                 }

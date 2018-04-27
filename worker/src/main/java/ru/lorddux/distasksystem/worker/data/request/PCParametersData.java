@@ -12,4 +12,5 @@ public class PCParametersData implements RequestData {
     private Integer ram;
     private Integer hdd;
     private Integer ssd;
+    private String apiAddress;
 }

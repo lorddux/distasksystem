@@ -13,6 +13,9 @@ public class Connector {
 
     private Connection connection;
     private PreparedStatement preparedStatement;
+    private String url;
+    private String user;
+    private String password;
 
     public static Connector getInstance() {
         Connector localInstance = instance;
@@ -29,23 +32,60 @@ public class Connector {
         return instance;
     }
 
+    public void close() throws SQLException {
+        connection.close();
+    }
+
     private Connector(Driver driver) throws SQLException {
         log_.info("Register jdbc driver");
         DriverManager.registerDriver(new DriverShim(driver));
     }
 
     public void connect(String url, String user, String password) throws SQLException {
-        log_.info("Connecting to " + url);
+        log_.info("Connect to " + url);
+        this.user = user;
+        this.url = url;
+        this.password = password;
+        connect();
+    }
+
+    private void connect() throws SQLException {
         connection = DriverManager.getConnection(url, user, password);
+        log_.info("Connected to " + url);
+    }
+
+    public void reconnect() throws SQLException {
+        log_.info("Reconnect to " + url);
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            log_.debug("Can not close connection: " + e.getMessage());
+        } finally {
+            connect();
+        }
+    }
+
+    public boolean isClosed() {
+        try {
+            return connection.isClosed();
+        } catch (SQLException e) {
+            return true;
+        }
     }
 
     public void prepareStatement(String sqlStatement) throws SQLException {
         preparedStatement = connection.prepareStatement(sqlStatement);
     }
 
-    public void setParameters(WorkerTaskResult result) throws SQLException {
+    public synchronized void setParameters(WorkerTaskResult result) throws SQLException {
         log_.debug(String.format("Set a new raw with parameters %s", result.toString()));
-        preparedStatement.setString(1, result.getId());
+        preparedStatement.setString(1, result.getTaskId()+result.getResultNumber());
+        preparedStatement.setString(2, result.getTaskId());
+        preparedStatement.setString(3, result.getTaskSentence());
+        preparedStatement.setInt(4, result.getResultNumber());
+        preparedStatement.setInt(5, result.getTimestamp());
+        preparedStatement.setString(6, result.getResult());
+        preparedStatement.addBatch();
     }
 
     public void executeBatch() throws SQLException {

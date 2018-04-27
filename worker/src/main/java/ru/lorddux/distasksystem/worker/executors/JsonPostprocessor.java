@@ -11,7 +11,7 @@ public class JsonPostprocessor implements Postprocessor {
     public String giveThisMethodName(String result, CloudQueueMessage task, int id) throws ExecutorException {
         if (! checkResult(result)) throw new ExecutorException(String.format("Bad return format: %s", result));
         try {
-            TaskResult taskResult = new TaskResult(task.getId(), task.getMessageContentAsString(), id, result, System.currentTimeMillis());
+            TaskResult taskResult = new TaskResult(task.getId(), task.getMessageContentAsString(), id,  (int) (System.currentTimeMillis() / 1000), result);
             return new Gson().toJson(taskResult);
         } catch (StorageException e) {
             throw new ExecutorException(e);

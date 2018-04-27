@@ -1,5 +1,6 @@
 package ru.lorddux.distasksystem.storage.receiver;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.Level;
@@ -8,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import ru.lorddux.distasksystem.Stopable;
 import ru.lorddux.distasksystem.storage.data.WorkerTaskResult;
 import ru.lorddux.distasksystem.storage.receiver.processors.SentenceProcessor;
+import ru.lorddux.distasksystem.utils.DynamicQueuePool;
 import ru.lorddux.distasksystem.utils.QueuePool;
 
 import java.io.BufferedReader;
@@ -16,12 +18,15 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 @RequiredArgsConstructor
 public class SocketWorker implements Stopable {
     private static final Logger log_ = LogManager.getLogger(SocketWorker.class);
-    private static int SO_TIMEOUT = 5000;
-    private static int DISCONNECT_TIMEOUT_MILLIS = 10 * 60 * 1000; // 10 minutes
+    private static final int SO_TIMEOUT = 5000;
+    private static final int DISCONNECT_TIMEOUT_MILLIS = 10 * 60 * 1000; // 10 minutes
+    private static final int QUEUE_SIZE = 1000;
 
     @NonNull
     private Socket clientSocket;
@@ -29,8 +34,8 @@ public class SocketWorker implements Stopable {
     @NonNull
     private SentenceProcessor processor;
 
-    @NonNull
-    private QueuePool<WorkerTaskResult> destinationPool;
+    @Getter
+    private BlockingQueue<WorkerTaskResult> destination = new ArrayBlockingQueue<>(QUEUE_SIZE);
 
     private volatile boolean stopFlag = false;
 
@@ -85,7 +90,7 @@ public class SocketWorker implements Stopable {
     }
 
     private void closeConnection() {
-        log_.info(String.format("Closing sql from %s", clientSocket.getInetAddress()));
+        log_.info(String.format("Closing connection from %s", clientSocket.getInetAddress()));
         try {
             clientSocket.shutdownInput();
             clientSocket.shutdownOutput();
@@ -98,6 +103,12 @@ public class SocketWorker implements Stopable {
 
     private void dispatch(String sentence) {
         WorkerTaskResult result = processor.decode(sentence);
-        destinationPool.add(result, 1000L);
+        while (! destination.offer(result)) {
+            try {
+                Thread.sleep(100L);
+            } catch (InterruptedException e) {
+                log_.info("Thread was interrupted. Exiting");
+            }
+        }
     }
 }

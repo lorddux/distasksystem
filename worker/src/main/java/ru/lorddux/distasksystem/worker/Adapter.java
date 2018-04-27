@@ -7,7 +7,9 @@ import org.apache.logging.log4j.Logger;
 import ru.lorddux.distasksystem.worker.config.Configuration;
 import ru.lorddux.distasksystem.worker.connector.StorageLayerConnector;
 import ru.lorddux.distasksystem.worker.connector.StorageLayerConnectorImpl;
-import ru.lorddux.distasksystem.worker.executors.ExecutorImpl;
+import ru.lorddux.distasksystem.worker.executors.CommandExecutor;
+import ru.lorddux.distasksystem.worker.executors.Executor;
+import ru.lorddux.distasksystem.worker.executors.PythonExecutor;
 import ru.lorddux.distasksystem.worker.queue.DeleteQueueMessagesClient;
 import ru.lorddux.distasksystem.worker.queue.GetQueueMessagesClient;
 import ru.lorddux.distasksystem.worker.queue.QueueProcessor;
@@ -33,7 +35,7 @@ public class Adapter implements Service {
     private static Logger log_ = LogManager.getLogger(Adapter.class);
     private static final String DEFAULT_SUBDIRECTORY = "var";
 
-    private Collection<ExecutorImpl> executors;
+    private Collection<Executor> executors;
     private GetQueueMessagesClient getMessagesClient;
     private DeleteQueueMessagesClient deleteMessagesClient;
     private StorageLayerConnector storageLayerConnector;
@@ -43,6 +45,10 @@ public class Adapter implements Service {
     private Downloader downloader;
     private volatile boolean runningFlag = false;
 
+    public long getStat() {
+        return storageLayerConnector.getStat();
+    }
+
     @Override
     synchronized public void start() {
         log_.info("Initialize services");
@@ -50,7 +56,6 @@ public class Adapter implements Service {
             init();
         } catch (Exception e) {
             log_.fatal("Can not init services", e);
-            System.exit(1);
             return;
         }
 
@@ -80,7 +85,7 @@ public class Adapter implements Service {
     synchronized public void stop() {
         log_.info("Stopping services");
         getMessagesClient.stop();
-        executors.parallelStream().forEach(ExecutorImpl::stopThread);
+        executors.parallelStream().forEach(Executor::stopThread);
         deleteMessagesClient.stop();
         storageLayerConnector.stop();
 
@@ -98,17 +103,24 @@ public class Adapter implements Service {
 
         log_.info("Initializing executors");
         for (int i = 0; i < configuration.getWorkerCapacity(); i++) {
-            executors.add(new ExecutorImpl(
-                    configuration.getCodeConfig().getCommand(),
-                    DEFAULT_SUBDIRECTORY + "/" + configuration.getCodeConfig().getMainFile(),
-                    ExecutorImpl.DEFAULT_QUEUE_SIZE
-            ));
+            if (configuration.getCodeMainFile() != null) {
+                executors.add(new PythonExecutor(
+                        configuration.getCodeCommand(),
+                        DEFAULT_SUBDIRECTORY + "/" + configuration.getCodeMainFile(),
+                        Executor.DEFAULT_QUEUE_SIZE
+                ));
+            } else {
+                executors.add(new CommandExecutor(
+                        configuration.getCodeCommand(),
+                        Executor.DEFAULT_QUEUE_SIZE
+                ));
+            }
         }
 
         log_.info("Creating queue processor");
         QueueProcessor queueProcessor = new QueueProcessorImpl(
-                configuration.getQueueConfig().getStorageConnectionString(),
-                configuration.getQueueConfig().getQueueName()
+                configuration.getQueueConnectionString(),
+                configuration.getQueueName()
         );
 
         log_.info("Creating GetQueueMessagesClient");
@@ -120,8 +132,8 @@ public class Adapter implements Service {
         log_.info("Creating StorageLayerConnector");
         storageLayerConnector = new StorageLayerConnectorImpl(executors, new TransportManager(
                 new TCPTransport(
-                        configuration.getStorageLayerConfig().getAddress(),
-                        configuration.getStorageLayerConfig().getPort()
+                        configuration.getStorageAddress(),
+                        configuration.getStoragePort()
                 )
         ));
 
@@ -133,8 +145,8 @@ public class Adapter implements Service {
         }
 
         downloader = new GitDownloader();
-        log_.info(String.format("Downloading code from %s", configuration.getCodeConfig().getAddress()));
-        downloader.download(configuration.getCodeConfig().getAddress(), DEFAULT_SUBDIRECTORY);
+        log_.info(String.format("Downloading code from %s", configuration.getCodeAddress()));
+        downloader.download(configuration.getCodeAddress(), DEFAULT_SUBDIRECTORY);
 
         log_.info("Installing requirements");
         try {

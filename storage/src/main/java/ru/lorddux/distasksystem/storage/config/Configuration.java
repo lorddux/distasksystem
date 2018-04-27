@@ -1,5 +1,6 @@
 package ru.lorddux.distasksystem.storage.config;
 
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,13 +13,14 @@ import java.util.List;
 public class Configuration {
     private static volatile Configuration instance;
 
-    private StorageLayerConfig storageLayerConfig;
     private Integer listenPort;
-    private DriverConfig driverConfig;
-    private DBConfig queueConfig;
-    private List<String> jvmParameters;
-    private Integer workerCapacity;
+    private String driverAddress;
+    private String driverClass;
     private String authorization;
+    private String connectionUrl;
+    private String connectionUserName;
+    private String connectionPassword;
+    private String sqlStatement;
 
     public static Configuration getInstance() {
         Configuration localInstance = instance;
@@ -35,31 +37,4 @@ public class Configuration {
             instance = newInstance;
         }
     }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class DriverConfig {
-        private String driverAddress;
-        private String driverClass;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class DBConfig {
-        private String connectionUrl;
-        private String connectionPassword;
-        private String tableName;
-        private String userName;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class StorageLayerConfig {
-        private String address;
-        private Integer port;
-    }
-
 }

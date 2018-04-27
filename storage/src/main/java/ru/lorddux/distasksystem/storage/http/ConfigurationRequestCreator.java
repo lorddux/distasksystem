@@ -1,33 +1,29 @@
 package ru.lorddux.distasksystem.storage.http;
 
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
-import ru.lorddux.distasksystem.storage.data.request.PCParametersData;
 
 import java.net.URISyntaxException;
 
-public class ConfigurationRequestCreator implements RequestCreator<PCParametersData> {
-    PCParametersData requestData;
-    URIBuilder uriBuilder;
+public class ConfigurationRequestCreator implements RequestCreator<Integer> {
+    private URIBuilder uriBuilder;
+    private String address;
 
-    public ConfigurationRequestCreator(PCParametersData requestData, String host, String path) {
+    public ConfigurationRequestCreator(String host, String path, String address) {
         uriBuilder = new URIBuilder().setScheme("http").setHost(host).setPath(path);
-        this.requestData = requestData;
+        this.address = address;
     }
 
-    public HttpGet createRequest(PCParametersData requestData) throws URISyntaxException {
-        setParameterIfNotNull(uriBuilder, "cpu", this.requestData.getCpu());
-        setParameterIfNotNull(uriBuilder, "ram", this.requestData.getRam());
-        setParameterIfNotNull(uriBuilder, "hdd", this.requestData.getHdd());
-        setParameterIfNotNull(uriBuilder, "ssd", this.requestData.getSsd());
-        HttpGet httpGet = new HttpGet(uriBuilder.build());
-        httpGet.setHeader("x-type", "storage");
-        return httpGet;
-    }
-
-    private void setParameterIfNotNull(URIBuilder uriBuilder, String paramName, Object object) {
-        if (object != null) {
-            uriBuilder.setParameter(paramName, object.toString());
+    public HttpPost createRequest(Integer port) throws URISyntaxException {
+        HttpPost httpPost = new HttpPost(uriBuilder.build());
+        httpPost.setHeader("x-type", "STORAGE");
+        if (port != null) {
+            httpPost.setHeader("x-port", port.toString());
         }
+
+        if (address != null) {
+            httpPost.setHeader("x-addr", address);
+        }
+        return httpPost;
     }
 }

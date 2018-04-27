@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Storage form</title>
+</head>
+<body>
+<form action="#" th:action="@{/setstorage}" th:object="${storageConfig}" method="post">
+    <table>
+        <tr>
+            <td>Driver address:</td>
+            <td><input type="text" th:field="*{driverAddress}" /></td>
+        </tr>
+        <tr>
+            <td>Driver main class:</td>
+            <td><input type="text" th:field="*{driverClass}" /></td>
+        </tr>
+        <tr>
+            <td>Connection url:</td>
+            <td><input type="text" th:field="*{connectionUrl}" /></td>
+        </tr>
+        <tr>
+            <td>Connection username:</td>
+            <td><input type="text" th:field="*{connectionUserName}" /></td>
+        </tr>
+        <tr>
+            <td>Connection password:</td>
+            <td><input type="text" th:field="*{connectionPassword}" /></td>
+        </tr>
+        <tr>
+            <td>Statement:</td>
+            <td><input type="text" th:field="*{sqlStatement}" /></td>
+        </tr>
+        <tr>
+            <td><button type="submit">Submit</button></td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

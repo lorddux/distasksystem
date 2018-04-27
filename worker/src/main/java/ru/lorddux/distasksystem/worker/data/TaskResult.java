@@ -1,5 +1,6 @@
 package ru.lorddux.distasksystem.worker.data;
 
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class TaskResult {
     private String taskId;
     private String taskSentence;
-    private int resultId;
+    private int resultNumber;
+    private int timestamp;
     private String result;
-    private long timestamp;
 }
