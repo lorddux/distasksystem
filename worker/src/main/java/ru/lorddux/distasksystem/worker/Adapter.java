@@ -45,6 +45,10 @@ public class Adapter implements Service {
     private Downloader downloader;
     private volatile boolean runningFlag = false;
 
+    public long getStat() {
+        return storageLayerConnector.getStat();
+    }
+
     @Override
     synchronized public void start() {
         log_.info("Initialize services");

@@ -28,7 +28,7 @@ public class StorageConfig implements Serializable {
 
     private String connectionUserName;
 
-    private String connectionPassword;
+    private String connectionPassword = "";
 
     @NotNull
     private String sqlStatement;
@@ -39,5 +39,15 @@ public class StorageConfig implements Serializable {
 
     public void addStorage(StorageLayer storageLayer) {
         storageLayers.add(storageLayer);
+    }
+
+    public void setValues(StorageConfig config) {
+        setId(config.getId());
+        setDriverAddress(config.getDriverAddress());
+        setDriverClass(config.getDriverClass());
+        setConnectionUrl(config.getConnectionUrl());
+        setConnectionUserName(config.getConnectionUserName());
+        setConnectionPassword(config.getConnectionPassword());
+        setSqlStatement(config.getSqlStatement());
     }
 }

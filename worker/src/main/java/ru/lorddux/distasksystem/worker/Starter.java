@@ -25,11 +25,27 @@ public final class Starter {
     @Parameter(names={"-h", "--host"}, required = true)
     private String configHost;
 
+    @Getter
+    @Setter
+    @Parameter(names = {"-lp", "-local_port"})
+    private Integer port;
+
+    @Getter
+    @Setter
+    @Parameter(names = {"-lh", "--local_hostname"}, required = true)
+    private String hostname;
+
     public static void main(String[] args) throws Exception {
         Starter starter = new Starter();
         JCommander commander = new JCommander(starter);
         commander.parse(args);
+        Integer port = starter.getPort() != null ? starter.getPort() : DEFAULT_PORT;
+        InetSocketAddress address = new InetSocketAddress(starter.getHostname(), port);
+        HttpServer server = HttpServer.create();
+        server.bind(address, 0);
+
         PCParametersData requestData = new PCParametersData();
+        requestData.setApiAddress(String.format("%s:%s", starter.getHostname(), port));
         ConfigurationClient configClient = new ConfigurationClient(starter.getConfigHost(), requestData);
         Thread configThread = new Thread(configClient);
         configThread.start();
@@ -39,10 +55,8 @@ public final class Starter {
             log_.error("Configuration obtaining was stopped due to error", e);
             return;
         }
-        Adapter adapter = new Adapter();
 
-        HttpServer server = HttpServer.create();
-        server.bind(new InetSocketAddress(DEFAULT_PORT), 0);
+        Adapter adapter = new Adapter();
         server.createContext("/start",
                 new StartServicesHttpHandler(Configuration.getInstance().getAuthorization(), adapter)
         );

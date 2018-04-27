@@ -17,7 +17,7 @@ import ru.lorddux.distasksystem.utils.download.DownloaderImpl;
 import java.io.File;
 import java.sql.Driver;
 
-public class Adapter implements Service {
+public class Adapter {
     private static final Logger log_ = LogManager.getLogger(Adapter.class);
     private static final String DRIVER_PATH = "var/driver.jar";
     private static final String SUBFOLDER = "var";
@@ -28,7 +28,10 @@ public class Adapter implements Service {
     private Thread receiverThread;
     private Thread connectionThread;
 
-    @Override
+    public long getStat() {
+        return connectionWorker.getStat();
+    }
+
     public synchronized void start() {
         log_.info("Initialize services");
         try {
@@ -43,7 +46,6 @@ public class Adapter implements Service {
         log_.info("All services were successfully started");
     }
 
-    @Override
     public synchronized void stop() {
         receiver.stop();
         connectionWorker.stop();
@@ -80,7 +82,6 @@ public class Adapter implements Service {
         connectionThread = new Thread(connectionWorker);
     }
 
-    @Override
     public boolean isRunning() {
         return runningFlag;
     }

@@ -2,7 +2,6 @@ package ru.lorddux.distasksystem.storage.config;
 
 import com.google.gson.Gson;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -19,11 +18,12 @@ import java.net.URISyntaxException;
 public class ConfigurationClient implements Runnable {
     private static final Logger log_ = LogManager.getLogger(ConfigurationClient.class);
     private static final long DEFAULT_SLEEP_TIME = 3000L;
-    private static final String CONFIG_PATH = "/config";
+    private static final String CONFIG_PATH = "/api/config";
     private static final String EMPTY_CONFIG = "-";
 
     private final String configServerHost;
     private final Integer port;
+    private final String address;
 
     @Setter
     @Getter
@@ -36,7 +36,7 @@ public class ConfigurationClient implements Runnable {
 
     @Override
     public void run() {
-        RequestCreator<Integer> requestService = new ConfigurationRequestCreator(configServerHost, CONFIG_PATH);
+        RequestCreator<Integer> requestService = new ConfigurationRequestCreator(configServerHost, CONFIG_PATH, address);
         HttpUriRequest request;
         try {
             request = requestService.createRequest(port);

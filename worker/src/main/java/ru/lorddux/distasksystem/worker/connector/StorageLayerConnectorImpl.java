@@ -16,6 +16,8 @@ public class StorageLayerConnectorImpl implements StorageLayerConnector, Runnabl
     private TransportManager transportManager;
     private QueuePool<String> resultQueuePool;
     private volatile boolean stop = false;
+    private volatile long stat = 0;
+
     public StorageLayerConnectorImpl(Collection<Executor> executors, TransportManager transportManager) {
         this.transportManager = transportManager;
         this.resultQueuePool = new ExecutorQueuePool<>(executors, Executor::getResultQueue);
@@ -24,6 +26,11 @@ public class StorageLayerConnectorImpl implements StorageLayerConnector, Runnabl
     public void stop() {
         stop = true;
         transportManager.stop();
+    }
+
+    @Override
+    public long getStat() {
+        return stat;
     }
 
     @Override
@@ -44,6 +51,7 @@ public class StorageLayerConnectorImpl implements StorageLayerConnector, Runnabl
                 try {
                     transportManager.sendMessageLine(result);
                     sent = true;
+                    stat += 1;
                 } catch (IOException e) {
                     log_.warn(String.format("Can not send result. Retrying #%s", tries), e);
                 }

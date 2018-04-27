@@ -44,4 +44,15 @@ public class WorkerConfig implements Serializable {
     public void addWorker(Worker worker) {
         workers.add(worker);
     }
+
+    public void setValues(WorkerConfig config) {
+        setCodeAddress(config.getCodeAddress());
+        setId(config.getId());
+        setCodeCommand(config.getCodeCommand());
+        setCodeMainFile(config.getCodeMainFile());
+        setQueueConnectionString(config.getQueueConnectionString());
+        setQueueName(config.getQueueName());
+        setStorageAddress(config.getStorageAddress());
+        setStoragePort(config.getStoragePort());
+    }
 }

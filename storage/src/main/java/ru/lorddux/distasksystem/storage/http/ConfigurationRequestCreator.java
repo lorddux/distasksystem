@@ -1,24 +1,29 @@
 package ru.lorddux.distasksystem.storage.http;
 
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
-import ru.lorddux.distasksystem.storage.data.request.PCParametersData;
 
 import java.net.URISyntaxException;
 
 public class ConfigurationRequestCreator implements RequestCreator<Integer> {
-    URIBuilder uriBuilder;
+    private URIBuilder uriBuilder;
+    private String address;
 
-    public ConfigurationRequestCreator(String host, String path) {
+    public ConfigurationRequestCreator(String host, String path, String address) {
         uriBuilder = new URIBuilder().setScheme("http").setHost(host).setPath(path);
+        this.address = address;
     }
 
-    public HttpGet createRequest(Integer port) throws URISyntaxException {
-        HttpGet httpGet = new HttpGet(uriBuilder.build());
-        httpGet.setHeader("x-type", "STORAGE");
+    public HttpPost createRequest(Integer port) throws URISyntaxException {
+        HttpPost httpPost = new HttpPost(uriBuilder.build());
+        httpPost.setHeader("x-type", "STORAGE");
         if (port != null) {
-            httpGet.setHeader("x-port", port.toString());
+            httpPost.setHeader("x-port", port.toString());
         }
-        return httpGet;
+
+        if (address != null) {
+            httpPost.setHeader("x-addr", address);
+        }
+        return httpPost;
     }
 }

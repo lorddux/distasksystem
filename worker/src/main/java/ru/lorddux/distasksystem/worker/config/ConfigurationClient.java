@@ -20,7 +20,7 @@ import java.net.URISyntaxException;
 public class ConfigurationClient implements Runnable {
     private static final Logger log_ = LogManager.getLogger(ConfigurationClient.class);
     private static final long DEFAULT_SLEEP_TIME = 3000L;
-    private static final String CONFIG_PATH = "/config";
+    private static final String CONFIG_PATH = "/api/config";
     private static final String EMPTY_CONFIG = "-";
     @NonNull private String configServerHost;
     @NonNull private PCParametersData requestData;
@@ -54,6 +54,7 @@ public class ConfigurationClient implements Runnable {
                 attemptsCount++;
                 String configRaw = HttpHelperService.getInstance().sendRequest(request);
                 if (configRaw.equals(EMPTY_CONFIG)) {
+                    log_.debug(String.format("Empty configuration was obtained. Retrying #%d...", attemptsCount));
                     try {
                         Thread.sleep(sleepTime);
                     } catch (InterruptedException ex) {

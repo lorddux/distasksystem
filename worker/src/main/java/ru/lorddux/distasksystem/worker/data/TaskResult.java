@@ -12,6 +12,6 @@ public class TaskResult {
     private String taskId;
     private String taskSentence;
     private int resultNumber;
-    private long timestamp;
+    private int timestamp;
     private String result;
 }

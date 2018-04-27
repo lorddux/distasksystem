@@ -6,6 +6,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ru.lorddux.distasksystem.manager.db.entity.StorageConfig;
@@ -13,6 +15,8 @@ import ru.lorddux.distasksystem.manager.db.entity.WorkerConfig;
 import ru.lorddux.distasksystem.manager.db.repositories.*;
 
 import javax.validation.Valid;
+import java.util.Arrays;
+import java.util.List;
 
 
 @Controller
@@ -46,8 +50,20 @@ public class FrontController implements WebMvcConfigurer {
             return "workerform";
         }
         workerConfig.setId(0L);
-        workerConfigRepository.save(workerConfig);
+        if (workerConfigRepository.findById(0L).isPresent()) {
+            WorkerConfig tmpConfig = workerConfigRepository.findById(0L).get();
+            tmpConfig.setValues(workerConfig);
+            workerConfigRepository.save(tmpConfig);
+        } else {
+            workerConfigRepository.save(workerConfig);
+        }
         return "redirect:workerconf";
+    }
+
+    @PostMapping("/nodes")
+    public String controlNodes() {
+
+        return "";
     }
 
     @GetMapping("/setstorage")
@@ -62,7 +78,13 @@ public class FrontController implements WebMvcConfigurer {
             return "storageform";
         }
         storageConfig.setId(0L);
-        storageConfigRepository.save(storageConfig);
+        if (storageConfigRepository.findById(0L).isPresent()) {
+            StorageConfig tmpConfig = storageConfigRepository.findById(0L).get();
+            tmpConfig.setValues(storageConfig);
+            storageConfigRepository.save(tmpConfig);
+        } else {
+            storageConfigRepository.save(storageConfig);
+        }
         return "redirect:storageconf";
     }
 

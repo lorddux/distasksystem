@@ -27,8 +27,14 @@ public class ConnectionWorker implements Stopable {
     @NonNull
     private Connector connector;
 
+
     private CacheManager<WorkerTaskResult> cache;
     private volatile boolean stopFlag = false;
+    private volatile long stat = 0L;
+
+    public long getStat() {
+        return stat;
+    }
 
     @Override
     public void stop() {
@@ -72,6 +78,7 @@ public class ConnectionWorker implements Stopable {
             }
             addBatch(results);
             results = new ArrayList<>();
+            stat += actual;
         }
     }
 
@@ -87,6 +94,7 @@ public class ConnectionWorker implements Stopable {
         for (WorkerTaskResult item :
                 data) {
             try {
+                log_.debug("Saving task result: " + item.toString());
                 connector.setParameters(item);
             } catch (SQLException e) {
                 log_.error("Can not prepare statement with values " + item.toString());
