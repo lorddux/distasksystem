@@ -78,7 +78,7 @@ public abstract class Executor extends Thread {
         while (scanner.hasNextLine()) {
             String result = scanner.nextLine();
             log_.trace(String.format("Task %s executed. Result: %s", task.getId(), result));
-            String finalResult = postprocessor.giveThisMethodName(result, task, id);
+            String finalResult = postprocessor.processResult(result, task, id);
             while ((! resultQueue.offer(finalResult, 1, TimeUnit.SECONDS)) && (! stopFlag));
             id++;
         }

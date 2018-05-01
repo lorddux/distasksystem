@@ -8,7 +8,7 @@ import ru.lorddux.distasksystem.worker.exception.ExecutorException;
 
 public class JsonPostprocessor implements Postprocessor {
     @Override
-    public String giveThisMethodName(String result, CloudQueueMessage task, int id) throws ExecutorException {
+    public String processResult(String result, CloudQueueMessage task, int id) throws ExecutorException {
         if (! checkResult(result)) throw new ExecutorException(String.format("Bad return format: %s", result));
         try {
             TaskResult taskResult = new TaskResult(task.getId(), task.getMessageContentAsString(), id,  (int) (System.currentTimeMillis() / 1000), result);

@@ -29,7 +29,7 @@ import java.rmi.server.UID;
 
 @Controller
 @RequestMapping(path="/api")
-public class ApiController implements WebMvcConfigurer {
+public class ApiController {
     private static final String EMPTY_CONFIG = "-";
     private static final Integer DEFAULT_STORAGE_PORT = 1515;
     private static final Integer DEFAULT_CAPACITY = 10;

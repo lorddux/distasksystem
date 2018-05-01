@@ -6,8 +6,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ru.lorddux.distasksystem.manager.db.entity.StorageConfig;
@@ -15,9 +13,6 @@ import ru.lorddux.distasksystem.manager.db.entity.WorkerConfig;
 import ru.lorddux.distasksystem.manager.db.repositories.*;
 
 import javax.validation.Valid;
-import java.util.Arrays;
-import java.util.List;
-
 
 @Controller
 public class FrontController implements WebMvcConfigurer {
