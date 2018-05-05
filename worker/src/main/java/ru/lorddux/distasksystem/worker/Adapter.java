@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * the main class if the worker
+ * the main class of the worker
  * obtains configuration.
  * starts up executors, queue processors
  */

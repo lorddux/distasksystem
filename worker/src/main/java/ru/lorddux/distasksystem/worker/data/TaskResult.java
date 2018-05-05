@@ -1,6 +1,5 @@
 package ru.lorddux.distasksystem.worker.data;
 
-import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
